@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beacon — Find work worth signing up for</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#14171F;
+  --ink-soft:#1E2233;
+  --paper:#FAF7F1;
+  --paper-dim:#F1ECDF;
+  --line:#DED7C4;
+  --line-dark:#333750;
+  --amber:#E8A33D;
+  --amber-dark:#C6842A;
+  --teal:#3E7C74;
+  --teal-dim:#E4EEEC;
+  --rose:#C1554A;
+  --rose-dim:#F6E4E2;
+  --text-muted:#767B8C;
+  --text-on-dark-muted:#9AA0B4;
+  --radius:10px;
+  --shadow:0 1px 2px rgba(20,23,31,0.06), 0 8px 24px -12px rgba(20,23,31,0.18);
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;margin:0;letter-spacing:-0.01em;}
+p{margin:0;}
+img{max-width:100%;display:block;}
+::selection{background:var(--amber);color:var(--ink);}
+:focus-visible{outline:2px solid var(--amber-dark);outline-offset:2px;}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+@media(max-width:640px){.wrap{padding:0 16px;}}
+
+/* ============ NAV ============ */
+.nav{
+  position:sticky;top:0;z-index:40;
+  background:rgba(250,247,241,0.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:28px;}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-style:italic;font-weight:700;font-size:22px;letter-spacing:-0.01em;}
+.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(232,163,61,0.25);flex-shrink:0;}
+.nav-links{display:flex;gap:4px;flex:1;}
+.nav-link{padding:8px 12px;border-radius:8px;font-size:14px;font-weight:500;color:var(--ink);}
+.nav-link:hover{background:var(--paper-dim);}
+.nav-link.active{background:var(--ink);color:var(--paper);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;display:flex;align-items:center;justify-content:center;position:relative;}
+.icon-btn:hover{background:var(--paper-dim);}
+.badge-count{position:absolute;top:-4px;right:-4px;background:var(--rose);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;font-family:var(--mono);}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;justify-content:center;
+  padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;border:1px solid transparent;
+  transition:transform .12s ease, background .12s ease;
+}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--ink);color:var(--paper);}
+.btn-primary:hover{background:var(--ink-soft);}
+.btn-amber{background:var(--amber);color:var(--ink);}
+.btn-amber:hover{background:var(--amber-dark);}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink);}
+.btn-ghost:hover{background:var(--paper-dim);}
+.btn-sm{padding:7px 12px;font-size:13px;}
+.btn-danger{background:var(--rose-dim);color:var(--rose);}
+.btn-danger:hover{background:#f0d2ce;}
+.btn-block{width:100%;}
+.user-chip{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:24px;background:var(--paper-dim);border:1px solid var(--line);font-size:13px;font-weight:600;}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.hamburger{display:none;width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:transparent;align-items:center;justify-content:center;}
+.mobile-menu{display:none;flex-direction:column;gap:2px;padding:10px 16px 16px;border-bottom:1px solid var(--line);background:var(--paper);}
+.mobile-menu.open{display:flex;}
+.mobile-menu .nav-link{padding:12px;}
+
+@media(max-width:860px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+}
+
+/* ============ HERO ============ */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);}
+.hero-inner{max-width:1180px;margin:0 auto;padding:64px 24px 56px;display:grid;grid-template-columns:1.1fr 0.7fr;gap:40px;align-items:center;}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.eyebrow::before{content:'';width:16px;height:1px;background:var(--teal);}
+.hero h1{font-size:clamp(34px,5vw,56px);line-height:1.03;max-width:620px;}
+.hero h1 em{font-style:italic;color:var(--amber-dark);}
+.hero-sub{margin-top:18px;font-size:17px;color:var(--text-muted);max-width:480px;}
+.search-bar{margin-top:28px;display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;gap:6px;}
+.search-bar input{flex:1;border:none;background:transparent;padding:12px 14px;font-size:15px;min-width:0;}
+.search-bar input:focus{outline:none;}
+.search-bar .divider{width:1px;background:var(--line);margin:8px 0;}
+.search-bar button{white-space:nowrap;}
+@media(max-width:640px){.search-bar{flex-direction:column;}.search-bar .divider{display:none;}}
+.stat-row{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap;}
+.stat b{font-family:var(--serif);font-size:22px;display:block;}
+.stat span{font-size:12px;color:var(--text-muted);font-family:var(--mono);}
+.beacon-graphic{position:relative;width:100%;aspect-ratio:1;max-width:340px;justify-self:end;}
+@media(max-width:860px){.hero-inner{grid-template-columns:1fr;}.beacon-graphic{display:none;}}
+
+/* ============ CHIPS ============ */
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;padding:22px 0 0;}
+.chip{padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:500;white-space:nowrap;}
+.chip:hover{border-color:var(--ink);}
+.chip.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+/* ============ SECTION ============ */
+.section{padding:52px 0;}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;gap:16px;}
+.section-head h2{font-size:26px;}
+.section-head .sub{color:var(--text-muted);font-size:14px;margin-top:4px;}
+
+/* ============ JOB CARD ============ */
+.card-scroll{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px;margin:0 -24px;padding-left:24px;padding-right:24px;}
+.card-scroll::-webkit-scrollbar{height:6px;}
+.card-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
+.job-card{
+  position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 18px 18px 22px;cursor:pointer;transition:box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+}
+.job-card:hover{box-shadow:var(--shadow);border-color:#c8c0a8;transform:translateY(-2px);}
+.job-card::before{
+  content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:2px;
+  background:repeating-linear-gradient(to bottom, var(--line) 0 3px, transparent 3px 7px);
+}
+.job-card.urgent::before{background:repeating-linear-gradient(to bottom, var(--amber) 0 3px, transparent 3px 7px);}
+.card-scroll .job-card{min-width:290px;max-width:290px;flex-shrink:0;}
+.job-top{display:flex;gap:12px;align-items:flex-start;}
+.logo-sq{width:42px;height:42px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--mono);font-weight:700;font-size:15px;}
+.job-title{font-family:var(--serif);font-size:17px;font-weight:600;line-height:1.25;}
+.job-company{font-size:13px;color:var(--text-muted);margin-top:2px;}
+.job-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:var(--text-muted);}
+.job-meta span{display:flex;align-items:center;gap:4px;}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.tag{background:var(--paper-dim);border-radius:6px;padding:4px 8px;font-size:11px;font-family:var(--mono);color:var(--ink-soft);}
+.tag.teal{background:var(--teal-dim);color:var(--teal);}
+.tag.amber{background:#FBEBD1;color:var(--amber-dark);}
+.job-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);}
+.salary{font-family:var(--mono);font-size:13px;font-weight:600;}
+.posted{font-size:11px;color:var(--text-muted);}
+.urgent-pill{position:absolute;top:14px;right:14px;background:var(--amber);color:var(--ink);font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;font-family:var(--mono);display:flex;align-items:center;gap:4px;}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--ink);animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+.job-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+
+/* ============ LISTINGS LAYOUT ============ */
+.listings-layout{display:grid;grid-template-columns:250px 1fr;gap:32px;align-items:flex-start;}
+@media(max-width:860px){.listings-layout{grid-template-columns:1fr;}}
+.filter-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:sticky;top:80px;}
+.filter-group{margin-bottom:22px;}
+.filter-group:last-child{margin-bottom:0;}
+.filter-group h4{font-size:12px;text-transform:uppercase;letter-spacing:0.06em;font-family:var(--mono);color:var(--text-muted);margin-bottom:10px;font-weight:500;}
+.check-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:14px;cursor:pointer;}
+.check-row input{width:15px;height:15px;accent-color:var(--ink);}
+.select-field{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:14px;}
+.mobile-filter-toggle{display:none;margin-bottom:16px;}
+@media(max-width:860px){
+  .filter-panel{position:static;display:none;}
+  .filter-panel.open{display:block;}
+  .mobile-filter-toggle{display:flex;}
+}
+.results-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.results-count{font-size:14px;color:var(--text-muted);}
+.results-count b{color:var(--ink);}
+.listings-list{display:flex;flex-direction:column;gap:12px;}
+.listings-list .job-card{padding:20px 20px 20px 24px;}
+.listings-list .job-top{align-items:center;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted);}
+.empty-state h3{color:var(--ink);margin-bottom:8px;}
+
+/* ============ JOB DETAIL ============ */
+.detail-layout{display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:flex-start;}
+@media(max-width:860px){.detail-layout{grid-template-columns:1fr;}}
+.detail-header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:24px;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);margin-bottom:18px;font-weight:500;}
+.back-link:hover{color:var(--ink);}
+.detail-title-row{display:flex;gap:16px;align-items:flex-start;}
+.detail-title-row h1{font-size:clamp(24px,3.4vw,34px);}
+.detail-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:var(--text-muted);}
+.detail-meta span{display:flex;align-items:center;gap:6px;}
+.detail-body h3{font-size:16px;margin:26px 0 10px;}
+.detail-body p, .detail-body li{color:#3B3F4D;font-size:15px;line-height:1.7;}
+.detail-body ul{padding-left:20px;margin:0;}
+.detail-body li{margin-bottom:6px;}
+.side-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.side-card h4{font-size:13px;text-transform:uppercase;letter-spacing:0.05em;font-family:var(--mono);color:var(--text-muted);margin-bottom:12px;font-weight:500;}
+.apply-box{position:sticky;top:80px;}
+.company-row{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+.company-row .logo-sq{width:44px;height:44px;}
+
+/* ============ FORMS ============ */
+.form-group{margin-bottom:18px;}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+.form-group .hint{font-size:12px;color:var(--text-muted);margin-top:5px;}
+.form-control{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;}
+.form-control:focus{outline:none;border-color:var(--ink);}
+textarea.form-control{resize:vertical;min-height:100px;font-family:inherit;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:520px){.form-row{grid-template-columns:1fr;}}
+.file-drop{border:1.5px dashed var(--line);border-radius:10px;padding:22px;text-align:center;cursor:pointer;background:var(--paper-dim);}
+.file-drop:hover{border-color:var(--ink);}
+.file-drop.has-file{border-style:solid;border-color:var(--teal);background:var(--teal-dim);}
+.role-toggle{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:20px;}
+.role-toggle button{flex:1;padding:11px;background:#fff;font-size:14px;font-weight:600;border:none;color:var(--text-muted);}
+.role-toggle button.active{background:var(--ink);color:var(--paper);}
+.security-note{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text-muted);margin-top:14px;padding:10px 12px;background:var(--paper-dim);border-radius:8px;}
+
+/* ============ MODAL ============ */
+.modal-overlay{position:fixed;inset:0;background:rgba(20,23,31,0.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .15s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:#fff;border-radius:14px;max-width:440px;width:100%;padding:28px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+.modal.wide{max-width:560px;}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.modal-head h3{font-size:20px;}
+.modal-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--paper-dim);font-size:16px;}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:24px;}
+.tab-btn{padding:10px 16px;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;margin-bottom:-1px;}
+.tab-btn.active{color:var(--ink);border-bottom-color:var(--amber);}
+
+/* ============ DASHBOARD ============ */
+.dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:12px;}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:24px 0 32px;}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
+.stat-card b{font-family:var(--serif);font-size:28px;display:block;}
+.stat-card span{font-size:12px;color:var(--text-muted);font-family:var(--mono);}
+.table-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+.dtable{width:100%;border-collapse:collapse;font-size:14px;}
+.dtable th{text-align:left;padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);font-family:var(--mono);font-weight:500;background:var(--paper-dim);border-bottom:1px solid var(--line);}
+.dtable td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.dtable tr:last-child td{border-bottom:none;}
+.dtable .actions{display:flex;gap:6px;flex-wrap:wrap;}
+.status-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.03em;display:inline-block;}
+.status-active{background:var(--teal-dim);color:var(--teal);}
+.status-closed{background:#EEE9DC;color:var(--text-muted);}
+.status-new{background:#E3E8FB;color:#3B4FCC;}
+.status-reviewed{background:#FBEBD1;color:var(--amber-dark);}
+.status-interview{background:var(--teal-dim);color:var(--teal);}
+.status-hired{background:#DCF0D8;color:#2F7A24;}
+.status-rejected{background:var(--rose-dim);color:var(--rose);}
+@media(max-width:700px){.table-wrap{overflow-x:auto;}.dtable{min-width:640px;}}
+.skill-editor{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.skill-chip{background:var(--paper-dim);padding:5px 10px 5px 12px;border-radius:16px;font-size:12px;display:flex;align-items:center;gap:6px;}
+.skill-chip button{background:none;border:none;color:var(--text-muted);font-size:14px;line-height:1;padding:0;}
+
+/* ============ TOAST ============ */
+.toast-stack{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px;max-width:340px;}
+@media(max-width:520px){.toast-stack{left:16px;right:16px;max-width:none;}}
+.toast{background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:10px;font-size:13px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 10px 30px rgba(0,0,0,0.25);animation:slideUp .2s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.toast b{color:var(--amber);}
+
+/* ============ FOOTER ============ */
+.site-footer{border-top:1px solid var(--line);padding:40px 0;margin-top:40px;}
+.footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.footer-row .brand{font-size:18px;}
+.footer-links{display:flex;gap:20px;font-size:13px;color:var(--text-muted);flex-wrap:wrap;}
+
+/* ============ HOW IT WORKS ============ */
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+@media(max-width:760px){.how-grid{grid-template-columns:1fr;}}
+.how-col h3{font-size:13px;text-transform:uppercase;letter-spacing:0.06em;font-family:var(--mono);color:var(--teal);margin-bottom:18px;}
+.step{display:flex;gap:14px;margin-bottom:20px;}
+.step-num{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--amber-dark);flex-shrink:0;width:28px;}
+.step p{font-size:14px;color:var(--text-muted);margin-top:2px;}
+.step strong{font-size:15px;display:block;}
+
+.cta-band{background:var(--ink);color:var(--paper);border-radius:16px;padding:44px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;margin:20px 0;}
+.cta-band h2{color:var(--paper);font-size:26px;}
+.cta-band p{color:var(--text-on-dark-muted);margin-top:6px;}
+
+.notif-panel{position:absolute;top:48px;right:0;width:320px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);z-index:60;overflow:hidden;}
+.notif-item{padding:14px 16px;border-bottom:1px solid var(--line);font-size:13px;}
+.notif-item:last-child{border-bottom:none;}
+.notif-item .t{font-size:11px;color:var(--text-muted);font-family:var(--mono);margin-top:4px;}
+.notif-empty{padding:24px;text-align:center;color:var(--text-muted);font-size:13px;}
+
+.page-pad{padding:40px 0 60px;}
+.center-col{max-width:520px;margin:0 auto;}
+.success-box{text-align:center;padding:50px 20px;}
+.success-icon{width:64px;height:64px;border-radius:50%;background:var(--teal-dim);color:var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast-stack" class="toast-stack"></div>
+
+<script>
+(function(){
+
+/* ================= DATA ================= */
+const CATEGORIES = ['Engineering','Design','Product','Marketing','Sales','Operations','Customer Support','Data & Analytics'];
+const TYPES = ['Full-time','Part-time','Contract','Internship'];
+const AVATAR_COLORS = ['#3E7C74','#C6842A','#3B4FCC','#C1554A','#5B4B8A','#1E2233','#2F7A24'];
+
+function colorFor(str){
+  let h=0; for(let i=0;i<str.length;i++) h = str.charCodeAt(i) + ((h<<5)-h);
+  return AVATAR_COLORS[Math.abs(h)%AVATAR_COLORS.length];
+}
+function initials(name){
+  return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+
+let jobIdCounter = 100;
+const RAW_JOBS = [
+ {title:'Senior Frontend Engineer',company:'Northwind Labs',category:'Engineering',location:'Remote',type:'Full-time',salaryMin:130,salaryMax:165,daysAgo:1,urgent:true,tags:['React','TypeScript','Remote-first'],desc:"Northwind Labs builds infrastructure tooling used by thousands of engineering teams. You'll own the frontend architecture for our developer dashboard, working closely with design and platform engineering.",resp:['Lead the rebuild of our core dashboard in React and TypeScript','Set frontend architecture standards across three product teams','Mentor two mid-level engineers and review design proposals','Partner with product and design on new feature rollouts'],reqs:['5+ years building production web applications','Deep knowledge of React, TypeScript, and modern build tooling','Experience owning architecture decisions, not just implementing them','Comfortable working async across time zones']},
+ {title:'Product Designer',company:'Northwind Labs',category:'Design',location:'San Francisco, CA',type:'Full-time',salaryMin:115,salaryMax:145,daysAgo:3,urgent:false,tags:['Figma','Design Systems'],desc:"We're looking for a product designer to help shape the next generation of our developer tools, from early concept sketches through shipped, polished UI.",resp:['Design end-to-end flows for new platform features','Maintain and extend our shared component library','Run lightweight user research and synthesize findings','Collaborate directly with engineers during implementation'],reqs:['3+ years of product design experience','A portfolio showing systems thinking, not just visuals','Fluency in Figma and prototyping tools','Experience designing for technical audiences a plus']},
+ {title:'Backend Engineer, Payments',company:'Cascade Financial',category:'Engineering',location:'New York, NY',type:'Full-time',salaryMin:140,salaryMax:175,daysAgo:2,urgent:true,tags:['Go','Postgres','Fintech'],desc:"Cascade Financial is rebuilding how small businesses move money. Join the payments team to build the ledger and settlement systems that process millions of transactions monthly.",resp:['Design and build services handling money movement and settlement','Improve reliability and observability of the payments pipeline','Work with compliance to ensure regulatory requirements are met','Participate in an on-call rotation for payment-critical services'],reqs:['4+ years backend engineering experience, ideally with Go or Java','Experience with distributed systems and data consistency guarantees','Prior fintech or payments experience is a strong plus','Comfort working in a regulated environment']},
+ {title:'Growth Marketing Manager',company:'Cascade Financial',category:'Marketing',location:'New York, NY',type:'Full-time',salaryMin:95,salaryMax:120,daysAgo:6,urgent:false,tags:['SEO','Lifecycle','B2B'],desc:"Own the growth marketing function for Cascade's small business banking product, from acquisition campaigns through lifecycle and retention programs.",resp:['Plan and execute paid and organic acquisition campaigns','Build lifecycle email and in-app messaging programs','Own the growth marketing budget and report on ROI','Partner with product on onboarding and activation experiments'],reqs:['4+ years in growth or performance marketing, B2B preferred','Strong analytical skills and comfort with SQL basics','Experience with lifecycle tools like Braze or Customer.io','Excellent written communication']},
+ {title:'Customer Support Specialist',company:'Harbor & Co.',category:'Customer Support',location:'Remote',type:'Full-time',salaryMin:52,salaryMax:65,daysAgo:0,urgent:true,tags:['Zendesk','Remote'],desc:"Harbor & Co. sells handmade home goods to customers worldwide. We're looking for a support specialist who genuinely enjoys solving problems and making people's day a little better.",resp:['Respond to customer inquiries across email and chat','Troubleshoot order, shipping, and product issues','Document recurring issues and flag trends to the product team','Maintain our help center articles'],reqs:['1+ years in a customer-facing support role','Excellent written communication','Comfortable working independently in a remote setting','Experience with Zendesk or similar tools a plus']},
+ {title:'Warehouse Operations Lead',company:'Harbor & Co.',category:'Operations',location:'Austin, TX',type:'Full-time',salaryMin:58,salaryMax:70,daysAgo:9,urgent:false,tags:['Logistics','Inventory'],desc:"Lead day-to-day operations at our Austin fulfillment center, overseeing a small team and ensuring orders ship accurately and on time.",resp:['Manage daily warehouse operations and a team of six associates','Own inventory accuracy and cycle counts','Improve pick, pack, and ship processes','Coordinate with carriers on shipping logistics'],reqs:['2+ years in warehouse or fulfillment operations','Experience leading a small team','Comfortable with inventory management software','Strong organizational skills']},
+ {title:'Data Analyst',company:'Bluefield Health',category:'Data & Analytics',location:'Remote',type:'Full-time',salaryMin:90,salaryMax:115,daysAgo:4,urgent:false,tags:['SQL','Python','Healthcare'],desc:"Bluefield Health builds software for clinical scheduling. As a data analyst, you'll help clinical operations teams understand utilization and outcomes across hundreds of care sites.",resp:['Build and maintain dashboards used by clinical ops leadership','Analyze scheduling and utilization data to find efficiency gains','Partner with product to define key metrics for new features','Present findings to non-technical stakeholders'],reqs:['2+ years in a data analyst or similar role','Strong SQL skills and familiarity with Python or R','Experience with BI tools like Looker or Tableau','Healthcare experience is a plus, not required']},
+ {title:'Account Executive',company:'Bluefield Health',category:'Sales',location:'Chicago, IL',type:'Full-time',salaryMin:80,salaryMax:110,daysAgo:12,urgent:false,tags:['SaaS','Healthcare','Quota-carrying'],desc:"Sell Bluefield's scheduling platform into mid-sized clinics and hospital systems, owning the full cycle from discovery to close.",resp:['Manage a full-cycle sales pipeline for mid-market accounts','Run product demos tailored to clinical operations buyers','Negotiate contracts and close new business','Collaborate with customer success on smooth handoffs'],reqs:['3+ years of B2B SaaS sales experience','Healthcare or clinical software experience preferred','Track record of hitting or exceeding quota','Comfortable with a consultative sales process']},
+ {title:'Junior Software Engineer',company:'Pinwheel Studio',category:'Engineering',location:'Remote',type:'Full-time',salaryMin:75,salaryMax:95,daysAgo:1,urgent:false,tags:['JavaScript','Mentorship','Remote'],desc:"Pinwheel Studio makes creative tools for independent game developers. We're hiring a junior engineer to join our small, close-knit team and grow quickly with real mentorship.",resp:['Build features across our web-based editor','Fix bugs reported by our creator community','Pair regularly with senior engineers on larger projects','Write tests and documentation for what you ship'],reqs:['1-2 years of professional or internship experience','Solid JavaScript fundamentals','Genuine curiosity and willingness to ask questions','A portfolio or side projects are a plus']},
+ {title:'UX Researcher (Contract)',company:'Pinwheel Studio',category:'Design',location:'Remote',type:'Contract',salaryMin:60,salaryMax:75,daysAgo:15,urgent:false,tags:['Research','3-month contract'],desc:"A three-month contract to run a foundational research study on how independent creators discover and adopt new tools inside our editor.",resp:['Plan and conduct 15-20 user interviews','Synthesize findings into an actionable report','Present recommendations to the product and design team','Help define research practices for future studies'],reqs:['3+ years of UX research experience','Experience with both qualitative and quantitative methods','Strong synthesis and storytelling skills','Available for a 3-month engagement']},
+ {title:'DevOps Engineer',company:'Cascade Financial',category:'Engineering',location:'Remote',type:'Full-time',salaryMin:135,salaryMax:160,daysAgo:5,urgent:false,tags:['AWS','Kubernetes','Terraform'],desc:"Own the infrastructure that keeps Cascade's payment systems reliable, secure, and easy for other engineers to deploy against.",resp:['Maintain and improve our Kubernetes-based infrastructure','Build CI/CD pipelines used by every engineering team','Own infrastructure-as-code practices with Terraform','Lead incident response for infrastructure issues'],reqs:['4+ years in DevOps, SRE, or infrastructure engineering','Deep experience with AWS, Kubernetes, and Terraform','Strong understanding of security best practices','Experience in a regulated or high-uptime environment']},
+ {title:'Marketing Intern',company:'Harbor & Co.',category:'Marketing',location:'Austin, TX',type:'Internship',salaryMin:20,salaryMax:24,daysAgo:8,urgent:false,tags:['Internship','Content'],desc:"A summer internship supporting the Harbor & Co. marketing team across content, social, and email campaigns.",resp:['Draft copy for email campaigns and product pages','Support social media content calendar and scheduling','Help analyze campaign performance data','Assist with photoshoots for new product launches'],reqs:['Currently pursuing a degree in marketing, communications, or related field','Strong writing skills','Interest in ecommerce or consumer brands','Available for a 10-12 week summer internship']},
+ {title:'Product Manager, Platform',company:'Northwind Labs',category:'Product',location:'San Francisco, CA',type:'Full-time',salaryMin:145,salaryMax:180,daysAgo:2,urgent:true,tags:['B2B','Developer Tools'],desc:"Own the roadmap for Northwind's platform APIs, working directly with the engineers and customers who build on top of us every day.",resp:['Define and prioritize the platform API roadmap','Talk to customers weekly to understand integration pain points','Write clear specs and partner closely with engineering','Track adoption metrics and report progress to leadership'],reqs:['4+ years of product management experience','Experience with developer-facing or API products','Strong technical fluency, ability to read API docs and specs','Excellent written and verbal communication']},
+ {title:'Part-Time Bookkeeper',company:'Harbor & Co.',category:'Operations',location:'Austin, TX',type:'Part-time',salaryMin:28,salaryMax:34,daysAgo:20,urgent:false,tags:['QuickBooks','Part-time'],desc:"Support our small finance team with day-to-day bookkeeping for a growing ecommerce business, roughly 20 hours per week.",resp:['Reconcile accounts payable and receivable weekly','Maintain accurate records in QuickBooks','Prepare monthly financial summaries for leadership','Support the annual audit process'],reqs:['2+ years of bookkeeping experience','Proficiency with QuickBooks','High attention to detail','Available approximately 20 hours per week']},
+];
+
+const jobs = RAW_JOBS.map((j,i)=>({
+  id: 'job-'+(i+1),
+  applicants: Math.floor(Math.random()*40)+2,
+  status:'Active',
+  employerId: 'emp-seed',
+  ...j
+}));
+
+let notifications = [];
+function addNotification(text){
+  notifications.unshift({id:'n'+Date.now()+Math.random(), text, time:'Just now'});
+}
+
+const candidateSeed = {
+  name:'Jordan Blake', email:'jordan@blake.dev', headline:'Frontend Engineer · React & TypeScript',
+  skills:['React','TypeScript','CSS','Accessibility'], resume:'jordan-blake-resume.pdf',
+  applications:[
+    {jobId:'job-1', date:'3 days ago', status:'Reviewed'},
+    {jobId:'job-9', date:'1 week ago', status:'New'},
+  ],
+  saved:['job-4','job-13']
+};
+
+/* ================= STATE ================= */
+const state = {
+  route:'home',
+  params:{},
+  user:null, // {role:'employer'|'candidate', name, email, ...}
+  search:'', locationSearch:'',
+  filters:{categories:[], types:[], location:'', remoteOnly:false},
+  sort:'newest',
+  mobileMenuOpen:false,
+  mobileFiltersOpen:false,
+  notifPanelOpen:false,
+  authModal:null, // 'login' | 'signup' | null
+  authRole:'candidate',
+  employerTab:'overview',
+  candidateTab:'applications',
+  applyJobId:null,
+  applySubmitted:false,
+  resumeFileName:null,
+  listingsLimit:8,
+};
+
+function go(route, params){
+  state.route = route; state.params = params||{}; state.mobileMenuOpen=false; state.mobileFiltersOpen=false; state.notifPanelOpen=false;
+  window.scrollTo(0,0);
+  render();
+}
+
+/* ================= UTILS ================= */
+function timeAgo(days){
+  if(days===0) return 'Today';
+  if(days===1) return '1 day ago';
+  if(days<7) return days+' days ago';
+  if(days<14) return '1 week ago';
+  return Math.floor(days/7)+' weeks ago';
+}
+function fmtSalary(min,max){ return '$'+min+'k – $'+max+'k'; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function showToast(msg, emailLine){
+  const stack = document.getElementById('toast-stack');
+  const el = document.createElement('div');
+  el.className='toast';
+  el.innerHTML = '<span>✦</span><span>'+msg+(emailLine?('<br><b>✉ '+emailLine+'</b>'):'')+'</span>';
+  stack.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s ease'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3800);
+}
+
+function getJob(id){ return jobs.find(j=>j.id===id); }
+
+/* ================= TEMPLATES ================= */
+
+function beaconSVG(){
+  return `<svg viewBox="0 0 200 200" width="100%" height="100%">
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#DED7C4" stroke-width="1"/>
+    <circle cx="100" cy="100" r="65" fill="none" stroke="#DED7C4" stroke-width="1"/>
+    <circle cx="100" cy="100" r="40" fill="none" stroke="#E8A33D" stroke-width="1.5" opacity="0.6"/>
+    ${Array.from({length:24}).map((_,i)=>{
+      const ang = (i/24)*Math.PI*2;
+      const r1=92, r2 = i%3===0? 82:88;
+      const x1=100+r1*Math.cos(ang), y1=100+r1*Math.sin(ang);
+      const x2=100+r2*Math.cos(ang), y2=100+r2*Math.sin(ang);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#C8C0A8" stroke-width="1"/>`;
+    }).join('')}
+    <circle cx="100" cy="100" r="7" fill="#E8A33D"/>
+    <circle cx="100" cy="100" r="7" fill="none" stroke="#E8A33D" stroke-width="1.5">
+      <animate attributeName="r" values="7;38;7" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0;0.8" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </svg>`;
+}
+
+function jobCardTpl(j){
+  const saved = state.user && state.user.role==='candidate' && (state.user.saved||[]).includes(j.id);
+  return `
+  <div class="job-card ${j.urgent?'urgent':''}" data-action="view-job" data-id="${j.id}">
+    ${j.urgent?`<div class="urgent-pill"><span class="pulse-dot"></span>Urgent</div>`:''}
+    <div class="job-top">
+      <div class="logo-sq" style="background:${colorFor(j.company)}">${initials(j.company)}</div>
+      <div>
+        <div class="job-title">${esc(j.title)}</div>
+        <div class="job-company">${esc(j.company)}</div>
+      </div>
+    </div>
+    <div class="job-meta">
+      <span>📍 ${esc(j.location)}</span>
+      <span>🕘 ${esc(j.type)}</span>
+    </div>
+    <div class="tag-row">
+      <span class="tag teal">${esc(j.category)}</span>
+      ${j.tags.slice(0,2).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+    </div>
+    <div class="job-foot">
+      <span class="salary">${fmtSalary(j.salaryMin,j.salaryMax)}</span>
+      <span class="posted">${timeAgo(j.daysAgo)}</span>
+    </div>
+  </div>`;
+}
+
+function navTpl(){
+  const active = r => state.route===r?'active':'';
+  const notifCount = notifications.length;
+  return `
+  <div class="nav">
+    <div class="nav-inner">
+      <a class="brand" data-action="go" data-route="home"><span class="brand-dot"></span>Beacon</a>
+      <div class="nav-links">
+        <a class="nav-link ${active('home')}" data-action="go" data-route="home">Home</a>
+        <a class="nav-link ${active('listings')}" data-action="go" data-route="listings">Browse jobs</a>
+        <a class="nav-link ${active('employer')}" data-action="go-employer">For employers</a>
+        <a class="nav-link ${active('candidate')}" data-action="go-candidate">For candidates</a>
+      </div>
+      <div class="nav-right">
+        <div style="position:relative;">
+          <button class="icon-btn" data-action="toggle-notif" title="Notifications">🔔${notifCount?`<span class="badge-count">${notifCount}</span>`:''}</button>
+          ${state.notifPanelOpen?notifPanelTpl():''}
+        </div>
+        ${state.user?userChipTpl():`
+          <button class="btn btn-ghost btn-sm" data-action="open-auth" data-mode="login">Log in</button>
+          <button class="btn btn-primary btn-sm" data-action="open-auth" data-mode="signup">Sign up</button>
+        `}
+        <button class="hamburger" data-action="toggle-mobile-menu">${state.mobileMenuOpen?'✕':'☰'}</button>
+      </div>
+    </div>
+    <div class="mobile-menu ${state.mobileMenuOpen?'open':''}">
+      <a class="nav-link" data-action="go" data-route="home">Home</a>
+      <a class="nav-link" data-action="go" data-route="listings">Browse jobs</a>
+      <a class="nav-link" data-action="go-employer">For employers</a>
+      <a class="nav-link" data-action="go-candidate">For candidates</a>
+      ${!state.user?`<a class="nav-link" data-action="open-auth" data-mode="login">Log in</a>
+      <a class="nav-link" data-action="open-auth" data-mode="signup">Sign up</a>`:''}
+    </div>
+  </div>`;
+}
+
+function notifPanelTpl(){
+  return `<div class="notif-panel">
+    ${notifications.length? notifications.slice(0,6).map(n=>`<div class="notif-item">${n.text}<div class="t">${n.time}</div></div>`).join('')
+    : `<div class="notif-empty">No notifications yet.<br>Apply to a job or post one to see updates here.</div>`}
+  </div>`;
+}
+
+function userChipTpl(){
+  const u = state.user;
+  return `<div class="user-chip" data-action="go-dashboard" style="cursor:pointer;">
+    <div class="avatar" style="background:${colorFor(u.name)}">${initials(u.name)}</div>
+    ${esc(u.name.split(' ')[0])}
+  </div>
+  <button class="btn btn-ghost btn-sm" data-action="logout">Log out</button>`;
+}
+
+function footerTpl(){
+  return `<div class="site-footer"><div class="wrap footer-row">
+    <div class="brand"><span class="brand-dot"></span>Beacon</div>
+    <div class="footer-links">
+      <span>© 2026 Beacon Job Board</span>
+      <a data-action="go" data-route="listings">Browse jobs</a>
+      <a data-action="go-employer">Post a job</a>
+      <a href="#" data-action="none">Privacy</a>
+      <a href="#" data-action="none">Terms</a>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- HOME ---------- */
+function homeTpl(){
+  const featured = [...jobs].sort((a,b)=>a.daysAgo-b.daysAgo).slice(0,6);
+  const companies = new Set(jobs.map(j=>j.company)).size;
+  const addedThisWeek = jobs.filter(j=>j.daysAgo<7).length;
+  return `
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow">Job board, tuned to your signal</div>
+        <h1>Find work worth<br><em>signing up for.</em></h1>
+        <p class="hero-sub">Beacon surfaces roles from teams that are actually hiring right now — no dead listings, no black holes.</p>
+        <div class="search-bar">
+          <input id="home-search-kw" type="text" placeholder="Job title, company, or keyword" value="${esc(state.search)}">
+          <div class="divider"></div>
+          <input id="home-search-loc" type="text" placeholder="Location or Remote" value="${esc(state.locationSearch)}">
+          <button class="btn btn-amber" data-action="home-search">Search jobs</button>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><b>${jobs.length}</b><span>OPEN ROLES</span></div>
+          <div class="stat"><b>${companies}</b><span>COMPANIES HIRING</span></div>
+          <div class="stat"><b>${addedThisWeek}</b><span>ADDED THIS WEEK</span></div>
+        </div>
+      </div>
+      <div class="beacon-graphic">${beaconSVG()}</div>
+    </div>
+    <div class="wrap">
+      <div class="chip-row">
+        ${CATEGORIES.map(c=>`<a class="chip" data-action="filter-category-go" data-cat="${esc(c)}">${esc(c)}</a>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="section">
+      <div class="section-head">
+        <div><h2>Freshly signaled</h2><div class="sub">Roles added in the last few days, worth a look first.</div></div>
+        <a class="btn btn-ghost btn-sm" data-action="go" data-route="listings">View all jobs →</a>
+      </div>
+      <div class="card-scroll">
+        ${featured.map(jobCardTpl).join('')}
+      </div>
+    </div>
+
+    <div class="section" style="border-top:1px solid var(--line);">
+      <div class="section-head"><div><h2>How Beacon works</h2></div></div>
+      <div class="how-grid">
+        <div class="how-col">
+          <h3>For candidates</h3>
+          <div class="step"><div class="step-num">01</div><div><strong>Search with real filters</strong><p>Narrow by category, location, and job type until the list is actually useful.</p></div></div>
+          <div class="step"><div class="step-num">02</div><div><strong>Apply in minutes</strong><p>Upload your resume once, write a note, and send — no accounts-within-accounts.</p></div></div>
+          <div class="step"><div class="step-num">03</div><div><strong>Track every application</strong><p>See status changes the moment an employer updates them, from your dashboard.</p></div></div>
+        </div>
+        <div class="how-col">
+          <h3>For employers</h3>
+          <div class="step"><div class="step-num">01</div><div><strong>Post the role</strong><p>Title, description, salary band — live on the board in under five minutes.</p></div></div>
+          <div class="step"><div class="step-num">02</div><div><strong>Review applicants</strong><p>Every application lands in one dashboard, sorted by when it arrived.</p></div></div>
+          <div class="step"><div class="step-num">03</div><div><strong>Move people forward</strong><p>Update a status and Beacon notifies the candidate automatically.</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-band">
+      <div><h2>Hiring? Post your first job free.</h2><p>Reach candidates actively searching, not passively scrolling.</p></div>
+      <button class="btn btn-amber" data-action="go-employer">Post a job</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- LISTINGS ---------- */
+function filteredJobs(){
+  let list = jobs.slice();
+  const kw = (state.search||'').toLowerCase().trim();
+  if(kw) list = list.filter(j=> j.title.toLowerCase().includes(kw) || j.company.toLowerCase().includes(kw) || j.tags.some(t=>t.toLowerCase().includes(kw)));
+  const loc = (state.locationSearch||'').toLowerCase().trim();
+  if(loc) list = list.filter(j=> j.location.toLowerCase().includes(loc) || (loc==='remote' && j.location==='Remote'));
+  if(state.filters.categories.length) list = list.filter(j=>state.filters.categories.includes(j.category));
+  if(state.filters.types.length) list = list.filter(j=>state.filters.types.includes(j.type));
+  if(state.filters.location) list = list.filter(j=>j.location===state.filters.location);
+  if(state.filters.remoteOnly) list = list.filter(j=>j.location==='Remote');
+  if(state.sort==='newest') list.sort((a,b)=>a.daysAgo-b.daysAgo);
+  if(state.sort==='salary') list.sort((a,b)=>b.salaryMax-a.salaryMax);
+  return list;
+}
+
+function listingsTpl(){
+  const list = filteredJobs();
+  const shown = list.slice(0, state.listingsLimit);
+  const locations = [...new Set(jobs.map(j=>j.location))].sort();
+  return `
+  <div class="wrap page-pad">
+    <div class="section-head">
+      <div><h2>Browse jobs</h2><div class="sub">Search and filter roles from every company on Beacon.</div></div>
+    </div>
+    <div class="search-bar" style="margin-bottom:20px;">
+      <input id="list-search-kw" type="text" placeholder="Job title, company, or keyword" value="${esc(state.search)}">
+      <div class="divider"></div>
+      <input id="list-search-loc" type="text" placeholder="Location or Remote" value="${esc(state.locationSearch)}">
+      <button class="btn btn-primary" data-action="list-search">Search</button>
+    </div>
+
+    <button class="btn btn-ghost mobile-filter-toggle" data-action="toggle-mobile-filters">⚙ Filters</button>
+
+    <div class="listings-layout">
+      <div class="filter-panel ${state.mobileFiltersOpen?'open':''}">
+        <div class="filter-group">
+          <h4>Category</h4>
+          ${CATEGORIES.map(c=>`<label class="check-row"><input type="checkbox" data-action="toggle-cat" data-cat="${esc(c)}" ${state.filters.categories.includes(c)?'checked':''}> ${esc(c)}</label>`).join('')}
+        </div>
+        <div class="filter-group">
+          <h4>Job type</h4>
+          ${TYPES.map(t=>`<label class="check-row"><input type="checkbox" data-action="toggle-type" data-type="${esc(t)}" ${state.filters.types.includes(t)?'checked':''}> ${esc(t)}</label>`).join('')}
+        </div>
+        <div class="filter-group">
+          <h4>Location</h4>
+          <select class="select-field" data-action="set-location-filter">
+            <option value="">All locations</option>
+            ${locations.map(l=>`<option value="${esc(l)}" ${state.filters.location===l?'selected':''}>${esc(l)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="check-row"><input type="checkbox" data-action="toggle-remote" ${state.filters.remoteOnly?'checked':''}> Remote only</label>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" data-action="clear-filters">Clear filters</button>
+      </div>
+
+      <div>
+        <div class="results-head">
+          <div class="results-count"><b>${list.length}</b> jobs found</div>
+          <select class="select-field" style="width:auto;" data-action="set-sort">
+            <option value="newest" ${state.sort==='newest'?'selected':''}>Newest first</option>
+            <option value="salary" ${state.sort==='salary'?'selected':''}>Highest salary</option>
+          </select>
+        </div>
+        ${shown.length? `<div class="listings-list">${shown.map(jobCardTpl).join('')}</div>`
+          : `<div class="empty-state"><h3>No jobs match those filters</h3><p>Try clearing a filter or searching a broader term.</p></div>`}
+        ${list.length>shown.length? `<div style="text-align:center;margin-top:20px;"><button class="btn btn-ghost" data-action="load-more">Load more jobs</button></div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- JOB DETAIL ---------- */
+function jobDetailTpl(){
+  const j = getJob(state.params.id);
+  if(!j) return `<div class="wrap page-pad"><div class="empty-state"><h3>Job not found</h3><a class="btn btn-primary" data-action="go" data-route="listings">Browse jobs</a></div></div>`;
+  const similar = jobs.filter(x=>x.id!==j.id && x.category===j.category).slice(0,3);
+  const applied = state.user && state.user.role==='candidate' && (state.user.applications||[]).some(a=>a.jobId===j.id);
+  const saved = state.user && state.user.role==='candidate' && (state.user.saved||[]).includes(j.id);
+  return `
+  <div class="wrap page-pad">
+    <a class="back-link" data-action="go" data-route="listings">← Back to all jobs</a>
+    <div class="detail-layout">
+      <div>
+        <div class="detail-header">
+          <div class="detail-title-row">
+            <div class="logo-sq" style="width:52px;height:52px;font-size:18px;background:${colorFor(j.company)}">${initials(j.company)}</div>
+            <div>
+              <h1>${esc(j.title)}</h1>
+              <div style="margin-top:4px;color:var(--text-muted);font-size:15px;">${esc(j.company)}</div>
+            </div>
+          </div>
+          <div class="detail-meta">
+            <span>📍 ${esc(j.location)}</span>
+            <span>🕘 ${esc(j.type)}</span>
+            <span>💰 ${fmtSalary(j.salaryMin,j.salaryMax)}</span>
+            <span>🗓 Posted ${timeAgo(j.daysAgo)}</span>
+            <span>👥 ${j.applicants} applicants</span>
+          </div>
+          <div class="tag-row" style="margin-top:14px;">
+            <span class="tag teal">${esc(j.category)}</span>
+            ${j.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+          </div>
+        </div>
+        <div class="detail-body">
+          <h3>About the role</h3>
+          <p>${esc(j.desc)}</p>
+          <h3>What you'll do</h3>
+          <ul>${j.resp.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+          <h3>What we're looking for</h3>
+          <ul>${j.reqs.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="apply-box">
+        <div class="side-card">
+          ${applied? `<div class="status-badge status-new" style="margin-bottom:10px;">Applied</div><p style="font-size:13px;color:var(--text-muted);">You've already applied to this role. Track it from your dashboard.</p><button class="btn btn-ghost btn-block" style="margin-top:12px;" data-action="go-candidate">View application</button>`
+          : `<button class="btn btn-amber btn-block" data-action="start-apply" data-id="${j.id}">Apply for this job</button>`}
+          <button class="btn btn-ghost btn-block" style="margin-top:10px;" data-action="toggle-save" data-id="${j.id}">${saved?'★ Saved':'☆ Save job'}</button>
+        </div>
+        <div class="side-card">
+          <h4>About ${esc(j.company)}</h4>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">${esc(j.company)} is hiring across ${new Set(jobs.filter(x=>x.company===j.company).map(x=>x.category)).size} teams right now, with ${jobs.filter(x=>x.company===j.company).length} open roles on Beacon.</p>
+        </div>
+        ${similar.length? `<div class="side-card">
+          <h4>Similar roles</h4>
+          ${similar.map(s=>`<div data-action="view-job" data-id="${s.id}" style="cursor:pointer;padding:8px 0;border-bottom:1px solid var(--line);">
+            <div style="font-size:13px;font-weight:600;">${esc(s.title)}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${esc(s.company)} · ${esc(s.location)}</div>
+          </div>`).join('')}
+        </div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- APPLY ---------- */
+function applyTpl(){
+  const j = getJob(state.applyJobId);
+  if(!j) return `<div class="wrap page-pad"><div class="empty-state"><h3>Nothing to apply to yet</h3><a class="btn btn-primary" data-action="go" data-route="listings">Browse jobs</a></div></div>`;
+  if(state.applySubmitted){
+    return `<div class="wrap page-pad"><div class="center-col success-box">
+      <div class="success-icon">✓</div>
+      <h2>Application sent</h2>
+      <p style="color:var(--text-muted);margin-top:10px;">Your application for <strong>${esc(j.title)}</strong> at ${esc(j.company)} is in. We'll let you know the moment there's an update.</p>
+      <div class="security-note" style="text-align:left;margin-top:20px;">✉ <span>A confirmation email was sent to ${esc(state.user?state.user.email:'you')}. Employers will contact you at this address if they move you forward.</span></div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+        <button class="btn btn-primary" data-action="go" data-route="listings">Keep browsing</button>
+        <button class="btn btn-ghost" data-action="go-candidate">View my applications</button>
+      </div>
+    </div></div>`;
+  }
+  const u = state.user;
+  return `<div class="wrap page-pad">
+    <a class="back-link" data-action="go" data-route="job" data-id="${j.id}">← Back to job</a>
+    <div class="center-col">
+      <div class="side-card" style="margin-bottom:20px;">
+        <div class="company-row">
+          <div class="logo-sq" style="background:${colorFor(j.company)}">${initials(j.company)}</div>
+          <div><div style="font-weight:600;">${esc(j.title)}</div><div style="font-size:13px;color:var(--text-muted);">${esc(j.company)} · ${esc(j.location)}</div></div>
+        </div>
+      </div>
+      <h2 style="margin-bottom:18px;">Apply for this role</h2>
+      <form id="apply-form">
+        <div class="form-row">
+          <div class="form-group"><label>Full name</label><input required class="form-control" name="name" value="${esc(u?u.name:'')}"></div>
+          <div class="form-group"><label>Email</label><input required type="email" class="form-control" name="email" value="${esc(u?u.email:'')}"></div>
+        </div>
+        <div class="form-group"><label>Phone</label><input class="form-control" name="phone" placeholder="(555) 555-0192"></div>
+        <div class="form-group">
+          <label>Resume</label>
+          <label class="file-drop ${state.resumeFileName?'has-file':''}" for="resume-input">
+            ${state.resumeFileName? `📄 ${esc(state.resumeFileName)} — click to change` : '⬆ Click to upload your resume (PDF or DOCX)'}
+          </label>
+          <input id="resume-input" type="file" accept=".pdf,.doc,.docx" style="display:none;">
+        </div>
+        <div class="form-group"><label>Cover note <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+          <textarea class="form-control" name="cover" placeholder="A couple sentences on why this role is a fit..."></textarea>
+        </div>
+        <button class="btn btn-amber btn-block" type="submit">Submit application</button>
+        <div class="security-note">🔒 <span>Your information is only shared with ${esc(j.company)} for this application.</span></div>
+      </form>
+    </div>
+  </div>`;
+}
+
+/* ---------- AUTH MODAL ---------- */
+function authModalTpl(){
+  if(!state.authModal) return '';
+  const mode = state.authModal;
+  return `<div class="modal-overlay" data-action="close-modal-overlay">
+    <div class="modal" data-stop>
+      <div class="modal-head"><h3>${mode==='login'?'Welcome back':'Create your account'}</h3><button class="modal-close" data-action="close-modal">✕</button></div>
+      <div class="role-toggle">
+        <button class="${state.authRole==='candidate'?'active':''}" data-action="set-auth-role" data-role="candidate">I'm a candidate</button>
+        <button class="${state.authRole==='employer'?'active':''}" data-action="set-auth-role" data-role="employer">I'm an employer</button>
+      </div>
+      <form id="auth-form">
+        ${mode==='signup'?`<div class="form-group"><label>Full name</label><input required class="form-control" name="name" placeholder="${state.authRole==='employer'?'Your name':'Jordan Blake'}"></div>`:''}
+        ${mode==='signup' && state.authRole==='employer'?`<div class="form-group"><label>Company name</label><input required class="form-control" name="company" placeholder="Northwind Labs"></div>`:''}
+        <div class="form-group"><label>Email</label><input required type="email" class="form-control" name="email" placeholder="you@example.com"></div>
+        <div class="form-group"><label>Password</label><input required type="password" class="form-control" name="password" placeholder="••••••••" minlength="4"></div>
+        <button class="btn btn-primary btn-block" type="submit">${mode==='login'?'Log in':'Create account'}</button>
+      </form>
+      <div class="security-note">🔒 <span>This is a prototype — no real accounts are created and any email/password combination will work.</span></div>
+      <p style="text-align:center;font-size:13px;margin-top:16px;color:var(--text-muted);">
+        ${mode==='login'?`New to Beacon? <a data-action="open-auth" data-mode="signup" style="color:var(--ink);font-weight:600;">Sign up</a>`
+        :`Already have an account? <a data-action="open-auth" data-mode="login" style="color:var(--ink);font-weight:600;">Log in</a>`}
+      </p>
+    </div>
+  </div>`;
+}
+
+/* ---------- EMPLOYER DASHBOARD ---------- */
+function employerJobs(){
+  const name = state.user?state.user.name:'';
+  return jobs.filter(j=>j.employerId==='emp-'+name || j.postedByMe);
+}
+
+function employerDashboardTpl(){
+  const myJobs = jobs.filter(j=>j.postedByMe);
+  const totalApplicants = myJobs.reduce((s,j)=>s+j.applicants+(j.newApplicants?j.newApplicants.length:0),0);
+  const tab = state.employerTab;
+  return `<div class="wrap page-pad">
+    <div class="dash-head">
+      <div><h2>Employer dashboard</h2><div class="sub" style="color:var(--text-muted);font-size:14px;margin-top:4px;">${esc(state.user.company||state.user.name)}</div></div>
+      <button class="btn btn-amber" data-action="set-emp-tab" data-tab="post">+ Post a new job</button>
+    </div>
+    <div class="stat-cards">
+      <div class="stat-card"><b>${myJobs.length}</b><span>ACTIVE POSTINGS</span></div>
+      <div class="stat-card"><b>${totalApplicants}</b><span>TOTAL APPLICANTS</span></div>
+      <div class="stat-card"><b>${myJobs.filter(j=>j.urgent).length}</b><span>MARKED URGENT</span></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn ${tab==='overview'?'active':''}" data-action="set-emp-tab" data-tab="overview">My postings</button>
+      <button class="tab-btn ${tab==='post'?'active':''}" data-action="set-emp-tab" data-tab="post">Post a job</button>
+      <button class="tab-btn ${tab==='applicants'?'active':''}" data-action="set-emp-tab" data-tab="applicants">Applicants</button>
+    </div>
+    ${tab==='overview'?employerPostingsTpl(myJobs):''}
+    ${tab==='post'?employerPostFormTpl():''}
+    ${tab==='applicants'?employerApplicantsTpl(myJobs):''}
+  </div>`;
+}
+
+function employerPostingsTpl(myJobs){
+  if(!myJobs.length) return `<div class="empty-state"><h3>No jobs posted yet</h3><p>Post your first role to start receiving applicants.</p><button class="btn btn-primary" style="margin-top:14px;" data-action="set-emp-tab" data-tab="post">Post a job</button></div>`;
+  return `<div class="table-wrap"><table class="dtable">
+    <thead><tr><th>Job title</th><th>Location</th><th>Status</th><th>Applicants</th><th>Posted</th><th></th></tr></thead>
+    <tbody>
+    ${myJobs.map(j=>`<tr>
+      <td>${esc(j.title)}</td>
+      <td>${esc(j.location)}</td>
+      <td><span class="status-badge ${j.status==='Active'?'status-active':'status-closed'}">${j.status}</span></td>
+      <td>${j.applicants+(j.newApplicants?j.newApplicants.length:0)}</td>
+      <td>${timeAgo(j.daysAgo)}</td>
+      <td class="actions">
+        <button class="btn btn-ghost btn-sm" data-action="view-job" data-id="${j.id}">View</button>
+        <button class="btn btn-ghost btn-sm" data-action="toggle-job-status" data-id="${j.id}">${j.status==='Active'?'Close':'Reopen'}</button>
+        <button class="btn btn-danger btn-sm" data-action="delete-job" data-id="${j.id}">Delete</button>
+      </td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function employerPostFormTpl(){
+  return `<div class="table-wrap" style="padding:24px;">
+    <form id="post-job-form">
+      <div class="form-row">
+        <div class="form-group"><label>Job title</label><input required class="form-control" name="title" placeholder="Senior Backend Engineer"></div>
+        <div class="form-group"><label>Category</label><select required class="form-control" name="category"><option value="">Select category</option>${CATEGORIES.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Location</label><input required class="form-control" name="location" placeholder="Remote / City, State"></div>
+        <div class="form-group"><label>Job type</label><select required class="form-control" name="type">${TYPES.map(t=>`<option>${esc(t)}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Min salary (k)</label><input required type="number" class="form-control" name="salaryMin" placeholder="90"></div>
+        <div class="form-group"><label>Max salary (k)</label><input required type="number" class="form-control" name="salaryMax" placeholder="120"></div>
+      </div>
+      <div class="form-group"><label>Job description</label><textarea required class="form-control" name="desc" placeholder="What is this role, and why does it matter to your team?"></textarea></div>
+      <div class="form-group"><label>Responsibilities <span style="font-weight:400;color:var(--text-muted);">(one per line)</span></label><textarea class="form-control" name="resp" placeholder="Own the roadmap for...&#10;Partner with design on..."></textarea></div>
+      <div class="form-group"><label>Requirements <span style="font-weight:400;color:var(--text-muted);">(one per line)</span></label><textarea class="form-control" name="reqs" placeholder="3+ years of experience...&#10;Strong communication skills"></textarea></div>
+      <div class="form-group"><label class="check-row"><input type="checkbox" name="urgent"> Mark as urgent hire</label></div>
+      <button class="btn btn-amber btn-block" type="submit">Publish job</button>
+    </form>
+  </div>`;
+}
+
+function employerApplicantsTpl(myJobs){
+  const rows = [];
+  myJobs.forEach(j=>{
+    (j.newApplicants||[]).forEach(a=>rows.push({job:j, app:a}));
+  });
+  if(!rows.length) return `<div class="empty-state"><h3>No applicants yet</h3><p>When candidates apply to your postings, they'll show up here.</p></div>`;
+  return `<div class="table-wrap"><table class="dtable">
+    <thead><tr><th>Candidate</th><th>Applied to</th><th>Applied</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    ${rows.map((r,i)=>`<tr>
+      <td>${esc(r.app.name)}<div style="font-size:12px;color:var(--text-muted);">${esc(r.app.email)}</div></td>
+      <td>${esc(r.job.title)}</td>
+      <td>${esc(r.app.date)}</td>
+      <td><span class="status-badge status-${r.app.status.toLowerCase()}">${esc(r.app.status)}</span></td>
+      <td class="actions">
+        <select class="select-field" style="font-size:12px;padding:5px 8px;" data-action="set-app-status" data-job="${r.job.id}" data-app="${r.app.id}">
+          ${['New','Reviewed','Interview','Hired','Rejected'].map(s=>`<option value="${s}" ${r.app.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+/* ---------- CANDIDATE DASHBOARD ---------- */
+function candidateDashboardTpl(){
+  const u = state.user;
+  const tab = state.candidateTab;
+  const apps = u.applications||[];
+  const saved = (u.saved||[]).map(id=>getJob(id)).filter(Boolean);
+  return `<div class="wrap page-pad">
+    <div class="dash-head"><div><h2>Candidate dashboard</h2><div class="sub" style="color:var(--text-muted);font-size:14px;margin-top:4px;">${esc(u.name)}</div></div></div>
+    <div class="stat-cards">
+      <div class="stat-card"><b>${apps.length}</b><span>APPLICATIONS SENT</span></div>
+      <div class="stat-card"><b>${apps.filter(a=>a.status==='Interview').length}</b><span>IN INTERVIEW</span></div>
+      <div class="stat-card"><b>${saved.length}</b><span>SAVED JOBS</span></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn ${tab==='applications'?'active':''}" data-action="set-cand-tab" data-tab="applications">My applications</button>
+      <button class="tab-btn ${tab==='saved'?'active':''}" data-action="set-cand-tab" data-tab="saved">Saved jobs</button>
+      <button class="tab-btn ${tab==='profile'?'active':''}" data-action="set-cand-tab" data-tab="profile">Profile</button>
+    </div>
+    ${tab==='applications'?candidateApplicationsTpl(apps):''}
+    ${tab==='saved'?candidateSavedTpl(saved):''}
+    ${tab==='profile'?candidateProfileTpl(u):''}
+  </div>`;
+}
+
+function candidateApplicationsTpl(apps){
+  if(!apps.length) return `<div class="empty-state"><h3>No applications yet</h3><p>Jobs you apply to will show up here with live status updates.</p><button class="btn btn-primary" style="margin-top:14px;" data-action="go" data-route="listings">Browse jobs</button></div>`;
+  return `<div class="table-wrap"><table class="dtable">
+    <thead><tr><th>Job</th><th>Company</th><th>Applied</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    ${apps.map(a=>{ const j=getJob(a.jobId); if(!j) return ''; return `<tr>
+      <td>${esc(j.title)}</td><td>${esc(j.company)}</td><td>${esc(a.date)}</td>
+      <td><span class="status-badge status-${a.status.toLowerCase()}">${esc(a.status)}</span></td>
+      <td><button class="btn btn-ghost btn-sm" data-action="view-job" data-id="${j.id}">View job</button></td>
+    </tr>`; }).join('')}
+    </tbody>
+  </table></div>`;
+}
+function candidateSavedTpl(saved){
+  if(!saved.length) return `<div class="empty-state"><h3>No saved jobs</h3><p>Tap "Save job" on any listing to keep it here.</p></div>`;
+  return `<div class="job-grid">${saved.map(jobCardTpl).join('')}</div>`;
+}
+function candidateProfileTpl(u){
+  return `<div class="table-wrap" style="padding:24px;max-width:520px;">
+    <form id="profile-form">
+      <div class="form-group"><label>Full name</label><input class="form-control" name="name" value="${esc(u.name)}"></div>
+      <div class="form-group"><label>Headline</label><input class="form-control" name="headline" value="${esc(u.headline||'')}" placeholder="e.g. Frontend Engineer · React"></div>
+      <div class="form-group">
+        <label>Skills</label>
+        <div class="skill-editor" id="skill-editor">
+          ${(u.skills||[]).map(s=>`<span class="skill-chip">${esc(s)}<button type="button" data-action="remove-skill" data-skill="${esc(s)}">✕</button></span>`).join('')}
+        </div>
+        <input class="form-control" id="skill-input" style="margin-top:8px;" placeholder="Type a skill and press Enter">
+      </div>
+      <div class="form-group">
+        <label>Resume</label>
+        <label class="file-drop ${u.resume?'has-file':''}" for="profile-resume-input">${u.resume?`📄 ${esc(u.resume)} — click to change`:'⬆ Upload your resume'}</label>
+        <input id="profile-resume-input" type="file" style="display:none;" accept=".pdf,.doc,.docx">
+      </div>
+      <button class="btn btn-primary" type="submit">Save profile</button>
+    </form>
+  </div>`;
+}
+
+/* ================= MASTER RENDER ================= */
+function render(){
+  let body = '';
+  if(state.route==='home') body = homeTpl();
+  else if(state.route==='listings') body = listingsTpl();
+  else if(state.route==='job') body = jobDetailTpl();
+  else if(state.route==='apply') body = applyTpl();
+  else if(state.route==='employer') body = employerDashboardTpl();
+  else if(state.route==='candidate') body = candidateDashboardTpl();
+
+  document.getElementById('app').innerHTML = navTpl() + '<main>' + body + '</main>' + footerTpl() + authModalTpl();
+  attachDynamicHandlers();
+}
+
+/* ================= EVENT HANDLERS ================= */
+document.addEventListener('click', function(e){
+  const t = e.target.closest('[data-action]');
+  if(!t) { return; }
+  const action = t.dataset.action;
+
+  if(action==='none'){ e.preventDefault(); return; }
+  if(action==='go'){ go(t.dataset.route, {id:t.dataset.id}); return; }
+  if(action==='go-employer'){
+    if(state.user && state.user.role==='employer'){ go('employer'); }
+    else { state.authRole='employer'; state.authModal='signup'; render(); }
+    return;
+  }
+  if(action==='go-candidate'){
+    if(state.user && state.user.role==='candidate'){ go('candidate'); }
+    else { state.authRole='candidate'; state.authModal='signup'; render(); }
+    return;
+  }
+  if(action==='go-dashboard'){ go(state.user.role==='employer'?'employer':'candidate'); return; }
+  if(action==='view-job'){ go('job', {id:t.dataset.id}); return; }
+  if(action==='toggle-mobile-menu'){ state.mobileMenuOpen = !state.mobileMenuOpen; render(); return; }
+  if(action==='toggle-mobile-filters'){ state.mobileFiltersOpen = !state.mobileFiltersOpen; render(); return; }
+  if(action==='toggle-notif'){ state.notifPanelOpen = !state.notifPanelOpen; render(); return; }
+  if(action==='open-auth'){ state.authModal = t.dataset.mode; render(); return; }
+  if(action==='close-modal' || action==='close-modal-overlay'){ if(action==='close-modal-overlay' && e.target !== t) return; state.authModal=null; render(); return; }
+  if(action==='set-auth-role'){ state.authRole = t.dataset.role; render(); return; }
+  if(action==='logout'){ state.user=null; go('home'); showToast('You have been logged out.'); return; }
+
+  if(action==='filter-category-go'){ state.filters.categories=[t.dataset.cat]; go('listings'); return; }
+  if(action==='home-search'){
+    state.search = document.getElementById('home-search-kw').value;
+    state.locationSearch = document.getElementById('home-search-loc').value;
+    go('listings'); return;
+  }
+  if(action==='list-search'){
+    state.search = document.getElementById('list-search-kw').value;
+    state.locationSearch = document.getElementById('list-search-loc').value;
+    state.listingsLimit=8; render(); return;
+  }
+  if(action==='toggle-cat'){
+    const c=t.dataset.cat; const i=state.filters.categories.indexOf(c);
+    if(i>-1) state.filters.categories.splice(i,1); else state.filters.categories.push(c);
+    state.listingsLimit=8; render(); return;
+  }
+  if(action==='toggle-type'){
+    const c=t.dataset.type; const i=state.filters.types.indexOf(c);
+    if(i>-1) state.filters.types.splice(i,1); else state.filters.types.push(c);
+    state.listingsLimit=8; render(); return;
+  }
+  if(action==='toggle-remote'){ state.filters.remoteOnly = !state.filters.remoteOnly; state.listingsLimit=8; render(); return; }
+  if(action==='clear-filters'){ state.filters={categories:[],types:[],location:'',remoteOnly:false}; state.search=''; state.locationSearch=''; state.listingsLimit=8; render(); return; }
+  if(action==='load-more'){ state.listingsLimit += 8; render(); return; }
+
+  if(action==='start-apply'){
+    if(!state.user || state.user.role!=='candidate'){
+      state.authRole='candidate'; state.authModal='login'; state.pendingApply=t.dataset.id; render(); return;
+    }
+    state.applyJobId = t.dataset.id; state.applySubmitted=false; state.resumeFileName = state.user.resume||null;
+    go('apply'); return;
+  }
+  if(action==='toggle-save'){
+    if(!state.user || state.user.role!=='candidate'){ state.authRole='candidate'; state.authModal='login'; render(); return; }
+    const id=t.dataset.id; state.user.saved = state.user.saved||[];
+    const i = state.user.saved.indexOf(id);
+    if(i>-1){ state.user.saved.splice(i,1); showToast('Removed from saved jobs.'); }
+    else { state.user.saved.push(id); showToast('Saved to your dashboard.'); }
+    render(); return;
+  }
+
+  if(action==='set-emp-tab'){ state.employerTab=t.dataset.tab; render(); return; }
+  if(action==='set-cand-tab'){ state.candidateTab=t.dataset.tab; render(); return; }
+  if(action==='toggle-job-status'){
+    const j=getJob(t.dataset.id); j.status = j.status==='Active'?'Closed':'Active'; render();
+    showToast(j.status==='Closed'?'Job posting closed.':'Job posting reopened.'); return;
+  }
+  if(action==='delete-job'){
+    const idx = jobs.findIndex(j=>j.id===t.dataset.id);
+    if(idx>-1 && confirm('Delete this job posting? This cannot be undone.')){ jobs.splice(idx,1); render(); showToast('Job posting deleted.'); }
+    return;
+  }
+  if(action==='set-app-status'){ return; } // handled by change listener below
+  if(action==='remove-skill'){
+    state.user.skills = (state.user.skills||[]).filter(s=>s!==t.dataset.skill); render(); return;
+  }
+});
+
+document.addEventListener('change', function(e){
+  const t = e.target.closest('[data-action]');
+  if(t){
+    if(t.dataset.action==='set-location-filter'){ state.filters.location = t.value; state.listingsLimit=8; render(); return; }
+    if(t.dataset.action==='set-sort'){ state.sort = t.value; render(); return; }
+    if(t.dataset.action==='set-app-status'){
+      const j = getJob(t.dataset.job);
+      const app = (j.newApplicants||[]).find(a=>a.id===t.dataset.app);
+      if(app){
+        app.status = t.value;
+        const candApp = (state.user.candidateRef ? null : null);
+        showToast('Status updated to "'+t.value+'".', 'Notified '+app.name+' at '+app.email);
+        addNotification('You marked <b>'+esc(app.name)+'</b> as <b>'+t.value+'</b> for '+esc(j.title));
+      }
+      render(); return;
+    }
+  }
+});
+
+function attachDynamicHandlers(){
+  const applyForm = document.getElementById('apply-form');
+  if(applyForm){
+    applyForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const fd = new FormData(applyForm);
+      const j = getJob(state.applyJobId);
+      const appObj = {jobId:j.id, date:'Just now', status:'New'};
+      state.user.applications = state.user.applications||[];
+      state.user.applications.unshift(appObj);
+      j.newApplicants = j.newApplicants||[];
+      j.newApplicants.unshift({id:'a'+Date.now(), name:fd.get('name'), email:fd.get('email'), date:'Just now', status:'New'});
+      state.applySubmitted = true;
+      addNotification('Application sent for <b>'+esc(j.title)+'</b> at '+esc(j.company));
+      showToast('Application submitted!', 'Confirmation sent to '+fd.get('email'));
+      render();
+    });
+    const resumeInput = document.getElementById('resume-input');
+    if(resumeInput) resumeInput.addEventListener('change', function(){
+      if(this.files[0]){ state.resumeFileName = this.files[0].name; render();
+        document.getElementById('apply-form').scrollIntoView({block:'nearest'});
+      }
+    });
+  }
+
+  const authForm = document.getElementById('auth-form');
+  if(authForm){
+    authForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const fd = new FormData(authForm);
+      const email = fd.get('email');
+      const role = state.authRole;
+      const mode = state.authModal;
+      if(role==='candidate'){
+        state.user = mode==='signup' ? {
+          role:'candidate', name: fd.get('name')||'Candidate', email, applications:[], saved:[], skills:[]
+        } : {
+          role:'candidate', name: candidateSeed.name, email, headline:candidateSeed.headline,
+          skills:[...candidateSeed.skills], resume:candidateSeed.resume,
+          applications: candidateSeed.applications.map(a=>({...a})), saved:[...candidateSeed.saved]
+        };
+      } else {
+        state.user = { role:'employer', name: fd.get('name')||email.split('@')[0], email, company: fd.get('company')||'' };
+        if(mode==='login'){
+          jobs.filter(j=>j.employerId==='emp-seed').slice(0,2).forEach(j=>{ j.postedByMe=true;
+            j.newApplicants = j.newApplicants || [{id:'seedA1',name:'Riley Nguyen',email:'riley.n@example.com',date:'2 days ago',status:'New'},{id:'seedA2',name:'Sam Okafor',email:'sam.okafor@example.com',date:'4 days ago',status:'Reviewed'}];
+          });
+        }
+      }
+      state.authModal = null;
+      showToast('Welcome, '+state.user.name.split(' ')[0]+'!', role==='candidate' && mode==='signup' ? 'Welcome email sent to '+email : null);
+      if(state.pendingApply){
+        state.applyJobId = state.pendingApply; state.pendingApply=null; state.applySubmitted=false;
+        go('apply');
+      } else {
+        go(role==='employer'?'employer':'candidate');
+      }
+    });
+  }
+
+  const postForm = document.getElementById('post-job-form');
+  if(postForm){
+    postForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const fd = new FormData(postForm);
+      const id = 'job-new-'+(jobIdCounter++);
+      const newJob = {
+        id, title:fd.get('title'), company: state.user.company||state.user.name, category:fd.get('category'),
+        location:fd.get('location'), type:fd.get('type'), salaryMin:Number(fd.get('salaryMin')), salaryMax:Number(fd.get('salaryMax')),
+        daysAgo:0, urgent: fd.get('urgent')==='on', tags:[fd.get('category')],
+        desc: fd.get('desc'),
+        resp: (fd.get('resp')||'').split('\\n').map(s=>s.trim()).filter(Boolean),
+        reqs: (fd.get('reqs')||'').split('\\n').map(s=>s.trim()).filter(Boolean),
+        applicants:0, status:'Active', employerId:'emp-'+state.user.name, postedByMe:true, newApplicants:[]
+      };
+      if(!newJob.resp.length) newJob.resp=['Details to be discussed during the interview process.'];
+      if(!newJob.reqs.length) newJob.reqs=['Details to be discussed during the interview process.'];
+      jobs.unshift(newJob);
+      state.employerTab='overview';
+      showToast('Job published!', 'Confirmation sent to '+state.user.email);
+      addNotification('Your posting <b>'+esc(newJob.title)+'</b> is now live.');
+      render();
+    });
+  }
+
+  const profileForm = document.getElementById('profile-form');
+  if(profileForm){
+    profileForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const fd = new FormData(profileForm);
+      state.user.name = fd.get('name'); state.user.headline = fd.get('headline');
+      showToast('Profile saved.');
+      render();
+    });
+    const skillInput = document.getElementById('skill-input');
+    if(skillInput) skillInput.addEventListener('keydown', function(ev){
+      if(ev.key==='Enter'){
+        ev.preventDefault();
+        const v = skillInput.value.trim();
+        if(v){ state.user.skills = state.user.skills||[]; if(!state.user.skills.includes(v)) state.user.skills.push(v); render(); }
+      }
+    });
+    const resumeInput2 = document.getElementById('profile-resume-input');
+    if(resumeInput2) resumeInput2.addEventListener('change', function(){
+      if(this.files[0]){ state.user.resume = this.files[0].name; showToast('Resume updated.'); render(); }
+    });
+  }
+}
+
+/* ================= INIT ================= */
+render();
+})();
+</script>
+</body>
+</html>

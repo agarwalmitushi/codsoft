@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recall — Make a quiz. Take a quiz. Know for sure.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#211B2E;
+  --ink-soft:#332A47;
+  --paper:#F7F4EC;
+  --paper-dim:#EEE8D8;
+  --line:#DED2E8;
+  --violet:#6C4AB6;
+  --violet-dark:#54327F;
+  --violet-dim:#EAE1F7;
+  --mint:#2E9A80;
+  --mint-dim:#E0F2ED;
+  --coral:#E0574A;
+  --coral-dim:#FBE4E1;
+  --amber:#DC9A2A;
+  --text-muted:#726B84;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(33,27,46,0.06), 0 10px 28px -14px rgba(33,27,46,0.28);
+  --display:'Space Grotesk', sans-serif;
+  --sans:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-0.01em;}
+p{margin:0;}
+::selection{background:var(--violet);color:#fff;}
+:focus-visible{outline:2px solid var(--violet-dark);outline-offset:2px;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+@media(max-width:640px){.wrap{padding:0 16px;}}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:40;background:rgba(247,244,236,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.nav-inner{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:28px;}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700;font-size:21px;}
+.brand-mark{width:26px;height:26px;border-radius:8px;background:var(--violet);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;transform:rotate(-6deg);flex-shrink:0;}
+.nav-links{display:flex;gap:4px;flex:1;}
+.nav-link{padding:8px 12px;border-radius:8px;font-size:14px;font-weight:600;color:var(--ink);}
+.nav-link:hover{background:var(--paper-dim);}
+.nav-link.active{background:var(--ink);color:var(--paper);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn{display:inline-flex;align-items:center;gap:6px;justify-content:center;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:600;border:1px solid transparent;transition:transform .12s ease, background .12s ease;}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--violet);color:#fff;}
+.btn-primary:hover{background:var(--violet-dark);}
+.btn-ink{background:var(--ink);color:var(--paper);}
+.btn-ink:hover{background:var(--ink-soft);}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink);}
+.btn-ghost:hover{background:var(--paper-dim);}
+.btn-sm{padding:7px 12px;font-size:13px;}
+.btn-block{width:100%;}
+.btn-danger{background:var(--coral-dim);color:var(--coral);}
+.btn-danger:hover{background:#f5d3ce;}
+.user-chip{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:24px;background:var(--paper-dim);border:1px solid var(--line);font-size:13px;font-weight:700;cursor:pointer;}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.hamburger{display:none;width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:transparent;align-items:center;justify-content:center;}
+.mobile-menu{display:none;flex-direction:column;gap:2px;padding:10px 16px 16px;border-bottom:1px solid var(--line);}
+.mobile-menu.open{display:flex;}
+@media(max-width:820px){.nav-links{display:none;} .hamburger{display:flex;}}
+
+/* HERO */
+.hero{border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
+.hero-inner{max-width:1080px;margin:0 auto;padding:64px 24px 60px;display:grid;grid-template-columns:1.1fr 0.7fr;gap:40px;align-items:center;}
+@media(max-width:860px){.hero-inner{grid-template-columns:1fr;}}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--mint);font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.eyebrow::before{content:'';width:16px;height:2px;background:var(--mint);border-radius:2px;}
+.hero h1{font-size:clamp(34px,5vw,54px);line-height:1.04;max-width:600px;}
+.hero h1 span{color:var(--violet);}
+.hero-sub{margin-top:16px;font-size:17px;color:var(--text-muted);max-width:460px;}
+.hero-actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;}
+.hero-stats{display:flex;gap:26px;margin-top:30px;flex-wrap:wrap;}
+.hstat b{font-family:var(--display);font-size:24px;display:block;}
+.hstat span{font-size:11px;color:var(--text-muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.04em;}
+.hero-card{position:relative;}
+.flash-stack{position:relative;height:280px;}
+.flash{position:absolute;inset:0;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;justify-content:space-between;}
+.flash:nth-child(1){transform:rotate(-6deg) translateY(10px);z-index:1;background:var(--violet-dim);}
+.flash:nth-child(2){transform:rotate(4deg) translateY(4px);z-index:2;background:var(--mint-dim);}
+.flash:nth-child(3){transform:rotate(-1deg);z-index:3;}
+.flash .qnum{font-family:var(--mono);font-size:11px;color:var(--text-muted);}
+.flash .qtext{font-family:var(--display);font-size:18px;font-weight:600;margin-top:8px;}
+.flash .opts{display:flex;flex-direction:column;gap:6px;margin-top:14px;}
+.flash .opt{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;background:#fff;}
+.flash .opt.correct{border-color:var(--mint);background:var(--mint-dim);}
+@media(max-width:860px){.hero-card{display:none;}}
+
+/* SECTIONS */
+.section{padding:52px 0;}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;gap:16px;flex-wrap:wrap;}
+.section-head h2{font-size:26px;}
+.section-head .sub{color:var(--text-muted);font-size:14px;margin-top:4px;}
+
+.path-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:700px){.path-grid{grid-template-columns:1fr;}}
+.path-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;}
+.path-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+.path-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px;}
+.path-card.create .path-icon{background:var(--violet-dim);}
+.path-card.take .path-icon{background:var(--mint-dim);}
+.path-card h3{font-size:20px;margin-bottom:8px;}
+.path-card p{color:var(--text-muted);font-size:14px;}
+.path-card .go{margin-top:16px;font-size:13px;font-weight:700;color:var(--violet);display:flex;align-items:center;gap:6px;}
+
+/* QUIZ CARD */
+.quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
+.quiz-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;position:relative;overflow:hidden;}
+.quiz-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:#c9bcdc;}
+.quiz-card::after{content:'';position:absolute;top:0;right:0;width:34px;height:34px;background:linear-gradient(135deg, transparent 50%, var(--paper-dim) 50%);}
+.cat-pill{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--mono);background:var(--violet-dim);color:var(--violet-dark);text-transform:uppercase;letter-spacing:0.03em;}
+.quiz-card h3{font-family:var(--display);font-size:18px;margin-top:12px;line-height:1.25;}
+.quiz-card .desc{font-size:13px;color:var(--text-muted);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--text-muted);}
+.quiz-meta b{color:var(--ink);}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.chip{padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;white-space:nowrap;}
+.chip:hover{border-color:var(--ink);}
+.chip.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.search-row{display:flex;gap:10px;margin-bottom:20px;}
+.search-row input{flex:1;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:#fff;}
+.search-row input:focus{outline:none;border-color:var(--violet);}
+
+/* FORMS */
+.form-group{margin-bottom:18px;}
+.form-group label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;}
+.form-group .hint{font-size:12px;color:var(--text-muted);margin-top:5px;}
+.form-control{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:14px;}
+.form-control:focus{outline:none;border-color:var(--violet);}
+textarea.form-control{resize:vertical;min-height:70px;font-family:inherit;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:520px){.form-row{grid-template-columns:1fr;}}
+.role-toggle{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.role-toggle button{flex:1;padding:11px;background:#fff;font-size:14px;font-weight:700;border:none;color:var(--text-muted);}
+.role-toggle button.active{background:var(--ink);color:var(--paper);}
+.security-note{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text-muted);margin-top:14px;padding:10px 12px;background:var(--paper-dim);border-radius:8px;}
+
+/* QUIZ BUILDER */
+.qb-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:18px;position:relative;}
+.qb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.qb-num{font-family:var(--mono);font-size:12px;color:var(--violet);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+.qb-remove{background:none;border:none;color:var(--coral);font-size:13px;font-weight:600;}
+.opt-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.opt-row input[type=radio]{width:18px;height:18px;accent-color:var(--mint);flex-shrink:0;}
+.opt-row input[type=text]{flex:1;}
+.opt-label{font-family:var(--mono);font-size:12px;color:var(--text-muted);width:16px;flex-shrink:0;}
+.add-q-btn{width:100%;padding:16px;border:1.5px dashed var(--line);border-radius:var(--radius);background:transparent;font-weight:700;color:var(--violet);font-size:14px;}
+.add-q-btn:hover{border-color:var(--violet);background:var(--violet-dim);}
+.qb-toolbar{position:sticky;bottom:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:10px;}
+
+/* QUIZ TAKING */
+.take-wrap{max-width:640px;margin:0 auto;}
+.progress-trail{display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap;}
+.dot{flex:1;height:6px;border-radius:4px;background:var(--paper-dim);min-width:14px;}
+.dot.done{background:var(--mint);}
+.dot.current{background:var(--violet);}
+.qcounter{font-family:var(--mono);font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:var(--shadow);}
+.qcard h2{font-size:clamp(20px,3vw,26px);line-height:1.3;margin-bottom:24px;}
+.option-btn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font-size:15px;font-weight:500;margin-bottom:12px;transition:border-color .12s ease, background .12s ease;}
+.option-btn:hover{border-color:var(--violet);background:var(--violet-dim);}
+.option-btn.selected{border-color:var(--violet);background:var(--violet-dim);font-weight:700;}
+.option-letter{width:28px;height:28px;border-radius:50%;background:var(--paper-dim);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;flex-shrink:0;}
+.option-btn.selected .option-letter{background:var(--violet);color:#fff;}
+.take-nav{display:flex;justify-content:space-between;margin-top:24px;gap:10px;}
+.exit-link{font-size:13px;color:var(--text-muted);margin-bottom:18px;display:inline-block;}
+.exit-link:hover{color:var(--ink);}
+
+/* RESULTS */
+.results-wrap{max-width:640px;margin:0 auto;text-align:center;}
+.score-ring{width:180px;height:180px;margin:0 auto 20px;position:relative;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-ring .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-ring b{font-family:var(--display);font-size:36px;}
+.score-ring span{font-size:12px;color:var(--text-muted);font-family:var(--mono);}
+.result-tag{display:inline-block;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;margin-top:6px;}
+.review-list{text-align:left;margin-top:36px;display:flex;flex-direction:column;gap:12px;}
+.review-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.review-item .rq{font-weight:700;font-size:15px;margin-bottom:10px;}
+.review-answer{display:flex;align-items:center;gap:8px;font-size:13px;padding:6px 0;}
+.review-answer.correct{color:var(--mint);}
+.review-answer.incorrect{color:var(--coral);}
+.review-answer .lab{color:var(--text-muted);width:70px;flex-shrink:0;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(33,27,46,0.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .15s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:28px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.3);}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.modal-head h3{font-size:20px;}
+.modal-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--paper-dim);font-size:16px;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:24px;}
+.tab-btn{padding:10px 16px;font-size:14px;font-weight:700;color:var(--text-muted);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;margin-bottom:-1px;}
+.tab-btn.active{color:var(--ink);border-bottom-color:var(--violet);}
+
+/* TABLE */
+.table-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+.dtable{width:100%;border-collapse:collapse;font-size:14px;}
+.dtable th{text-align:left;padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);font-family:var(--mono);font-weight:600;background:var(--paper-dim);border-bottom:1px solid var(--line);}
+.dtable td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.dtable tr:last-child td{border-bottom:none;}
+.dtable .actions{display:flex;gap:6px;flex-wrap:wrap;}
+@media(max-width:700px){.table-wrap{overflow-x:auto;}.dtable{min-width:560px;}}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted);}
+.empty-state h3{color:var(--ink);margin-bottom:8px;}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:24px 0 32px;}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
+.stat-card b{font-family:var(--display);font-size:26px;display:block;}
+.stat-card span{font-size:11px;color:var(--text-muted);font-family:var(--mono);text-transform:uppercase;}
+
+/* TOAST */
+.toast-stack{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px;max-width:340px;}
+@media(max-width:520px){.toast-stack{left:16px;right:16px;max-width:none;}}
+.toast{background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:12px;font-size:13px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 10px 30px rgba(0,0,0,0.25);animation:slideUp .2s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.site-footer{border-top:1px solid var(--line);padding:36px 0;margin-top:20px;}
+.footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.footer-links{display:flex;gap:20px;font-size:13px;color:var(--text-muted);flex-wrap:wrap;}
+.page-pad{padding:40px 0 60px;}
+.center-col{max-width:520px;margin:0 auto;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast-stack" class="toast-stack"></div>
+
+<script>
+(function(){
+
+/* ================= DATA ================= */
+const CATEGORIES = ['General Knowledge','Science','History','Geography','Pop Culture','Tech & Coding','Sports'];
+const AVATAR_COLORS = ['#6C4AB6','#2E9A80','#DC9A2A','#E0574A','#3A5FCC','#211B2E'];
+function colorFor(str){ let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h); return AVATAR_COLORS[Math.abs(h)%AVATAR_COLORS.length]; }
+function initials(name){ return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+let quizIdCounter=100;
+const quizzes = [
+ {id:'q-1',title:'World Capitals Sprint',desc:'Quick-fire round on the capital cities of the world — how many can you place?',category:'Geography',author:'Maya Chen',timesTaken:812,
+  questions:[
+   {text:'What is the capital of Australia?',options:['Sydney','Canberra','Melbourne','Perth'],correct:1},
+   {text:'What is the capital of Canada?',options:['Toronto','Vancouver','Ottawa','Montreal'],correct:2},
+   {text:'What is the capital of Brazil?',options:['Rio de Janeiro','São Paulo','Brasília','Salvador'],correct:2},
+   {text:'What is the capital of Egypt?',options:['Cairo','Alexandria','Giza','Luxor'],correct:0},
+   {text:'What is the capital of Japan?',options:['Osaka','Kyoto','Yokohama','Tokyo'],correct:3},
+  ]},
+ {id:'q-2',title:'The Solar System',desc:'Test your knowledge of planets, moons, and the stuff of space.',category:'Science',author:'Priya Anand',timesTaken:1204,
+  questions:[
+   {text:'Which planet is known as the Red Planet?',options:['Venus','Mars','Jupiter','Saturn'],correct:1},
+   {text:'What is the largest planet in our solar system?',options:['Saturn','Neptune','Jupiter','Earth'],correct:2},
+   {text:'How many moons does Earth have?',options:['0','1','2','3'],correct:1},
+   {text:'Which planet has the most prominent ring system?',options:['Uranus','Saturn','Neptune','Mars'],correct:1},
+  ]},
+ {id:'q-3',title:'Movie Trivia: 2000s Edition',desc:'From blockbusters to cult classics — how well do you remember the 2000s?',category:'Pop Culture',author:'Diego Ramirez',timesTaken:2033,
+  questions:[
+   {text:'Which film won Best Picture at the 2004 Oscars?',options:['Gladiator','Chicago','Lord of the Rings: Return of the King','Titanic'],correct:2},
+   {text:'Who directed "The Dark Knight" (2008)?',options:['Christopher Nolan','Tim Burton','Zack Snyder','Sam Raimi'],correct:0},
+   {text:'What was the highest-grossing film of 2009?',options:['Transformers','Avatar','Star Trek','Up'],correct:1},
+  ]},
+ {id:'q-4',title:'JavaScript Fundamentals',desc:'Core concepts every developer should know — closures, scope, and more.',category:'Tech & Coding',author:'Sam Okoye',timesTaken:945,
+  questions:[
+   {text:'What does "===" check in JavaScript?',options:['Value only','Type only','Value and type','Neither'],correct:2},
+   {text:'Which keyword declares a block-scoped variable?',options:['var','let','function','global'],correct:1},
+   {text:'What does JSON stand for?',options:['JavaScript Object Notation','Java Standard Object Notes','Joined Syntax Object Node','JavaScript Ordered Numbers'],correct:0},
+   {text:'What is a closure in JavaScript?',options:['A loop that never ends','A function bundled with its lexical scope','A type of array','A CSS property'],correct:1},
+  ]},
+ {id:'q-5',title:'Ancient Civilizations',desc:'Egypt, Rome, Greece, and beyond — a journey through the ancient world.',category:'History',author:'Maya Chen',timesTaken:670,
+  questions:[
+   {text:'Who was the first Roman Emperor?',options:['Julius Caesar','Augustus','Nero','Constantine'],correct:1},
+   {text:'The Great Pyramid of Giza was built for which pharaoh?',options:['Tutankhamun','Ramesses II','Khufu','Akhenaten'],correct:2},
+   {text:'Which ancient civilization built Machu Picchu?',options:['Aztec','Maya','Inca','Olmec'],correct:2},
+  ]},
+ {id:'q-6',title:'Football Know-How',desc:'A quick round for football fans — leagues, records, and legends.',category:'Sports',author:'Diego Ramirez',timesTaken:1330,
+  questions:[
+   {text:'Which country has won the most FIFA World Cups?',options:['Germany','Argentina','Brazil','Italy'],correct:2},
+   {text:'How many players are on a football team on the field at once?',options:['9','10','11','12'],correct:2},
+   {text:'The Premier League is the top football division of which country?',options:['Spain','England','France','Germany'],correct:1},
+  ]},
+];
+
+let notifications = [];
+function addNotification(text){ notifications.unshift({id:'n'+Date.now()+Math.random(), text, time:'Just now'}); }
+
+/* ================= STATE ================= */
+const state = {
+  route:'home', params:{},
+  user:null,
+  mobileMenuOpen:false, notifPanelOpen:false,
+  authModal:null, authRole:'taker', authIntent:null,
+  search:'', activeCategory:'',
+  builder:null,
+  takeSession:null,
+  dashTab:'created',
+};
+
+function go(route, params){
+  state.route=route; state.params=params||{}; state.mobileMenuOpen=false; state.notifPanelOpen=false;
+  window.scrollTo(0,0); render();
+}
+
+function showToast(msg, sub){
+  const stack = document.getElementById('toast-stack');
+  const el = document.createElement('div');
+  el.className='toast';
+  el.innerHTML = '<span>✦</span><span>'+msg+(sub?('<br><b style="color:#C9B6EE;">'+sub+'</b>'):'')+'</span>';
+  stack.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s ease'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3600);
+}
+function getQuiz(id){ return quizzes.find(q=>q.id===id); }
+
+/* ================= BUILDER HELPERS ================= */
+function newBlankQuestion(){ return {text:'', options:['','','',''], correct:0}; }
+function newBuilder(){ return {title:'', desc:'', category:'', questions:[newBlankQuestion()]}; }
+
+/* ================= TEMPLATES ================= */
+function navTpl(){
+  const active=r=>state.route===r?'active':'';
+  return `<div class="nav">
+    <div class="nav-inner">
+      <a class="brand" data-action="go" data-route="home"><span class="brand-mark">R</span>Recall</a>
+      <div class="nav-links">
+        <a class="nav-link ${active('home')}" data-action="go" data-route="home">Home</a>
+        <a class="nav-link ${active('listing')}" data-action="go" data-route="listing">Browse quizzes</a>
+        <a class="nav-link ${active('build')}" data-action="go-create">Create a quiz</a>
+      </div>
+      <div class="nav-right">
+        ${state.user?userChipTpl():`
+          <button class="btn btn-ghost btn-sm" data-action="open-auth" data-mode="login">Log in</button>
+          <button class="btn btn-ink btn-sm" data-action="open-auth" data-mode="signup">Sign up</button>
+        `}
+        <button class="hamburger" data-action="toggle-mobile-menu">${state.mobileMenuOpen?'✕':'☰'}</button>
+      </div>
+    </div>
+    <div class="mobile-menu ${state.mobileMenuOpen?'open':''}">
+      <a class="nav-link" data-action="go" data-route="home">Home</a>
+      <a class="nav-link" data-action="go" data-route="listing">Browse quizzes</a>
+      <a class="nav-link" data-action="go-create">Create a quiz</a>
+      ${state.user?`<a class="nav-link" data-action="go" data-route="dashboard">My dashboard</a>`:`
+      <a class="nav-link" data-action="open-auth" data-mode="login">Log in</a>
+      <a class="nav-link" data-action="open-auth" data-mode="signup">Sign up</a>`}
+    </div>
+  </div>`;
+}
+function userChipTpl(){
+  const u=state.user;
+  return `<div class="user-chip" data-action="go" data-route="dashboard"><div class="avatar" style="background:${colorFor(u.name)}">${initials(u.name)}</div>${esc(u.name.split(' ')[0])}</div>
+  <button class="btn btn-ghost btn-sm" data-action="logout">Log out</button>`;
+}
+function footerTpl(){
+  return `<div class="site-footer"><div class="wrap footer-row">
+    <div class="brand"><span class="brand-mark">R</span>Recall</div>
+    <div class="footer-links"><span>© 2026 Recall Quiz Maker</span>
+      <a data-action="go" data-route="listing">Browse quizzes</a>
+      <a data-action="go-create">Create a quiz</a>
+      <a href="#" data-action="none">Privacy</a><a href="#" data-action="none">Terms</a>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- HOME ---------- */
+function homeTpl(){
+  const featured = [...quizzes].sort((a,b)=>b.timesTaken-a.timesTaken).slice(0,3);
+  const totalPlays = quizzes.reduce((s,q)=>s+q.timesTaken,0);
+  return `
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow">Online quiz maker</div>
+        <h1>Make a quiz.<br>Take a quiz.<br><span>Know for sure.</span></h1>
+        <p class="hero-sub">Build a quiz from your own questions in minutes, or jump into one someone else made — get your score the second you finish.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-action="go-create">+ Create a quiz</button>
+          <button class="btn btn-ghost" data-action="go" data-route="listing">Browse quizzes</button>
+        </div>
+        <div class="hero-stats">
+          <div class="hstat"><b>${quizzes.length}</b><span>QUIZZES LIVE</span></div>
+          <div class="hstat"><b>${totalPlays.toLocaleString()}</b><span>QUIZZES TAKEN</span></div>
+          <div class="hstat"><b>${CATEGORIES.length}</b><span>CATEGORIES</span></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="flash-stack">
+          <div class="flash"></div>
+          <div class="flash"></div>
+          <div class="flash">
+            <div><div class="qnum">QUESTION 2 OF 5</div><div class="qtext">What is the capital of Brazil?</div></div>
+            <div class="opts">
+              <div class="opt">Rio de Janeiro</div>
+              <div class="opt correct">Brasília ✓</div>
+              <div class="opt">São Paulo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="section">
+      <div class="path-grid">
+        <div class="path-card create" data-action="go-create">
+          <div class="path-icon">✏️</div>
+          <h3>Create a quiz</h3>
+          <p>Add your own questions, four answer choices each, and mark what's correct. Live on the board in minutes.</p>
+          <div class="go">Start building →</div>
+        </div>
+        <div class="path-card take" data-action="go" data-route="listing">
+          <div class="path-icon">🎯</div>
+          <h3>Take a quiz</h3>
+          <p>Browse quizzes by category, answer one question at a time, and see your score the moment you finish.</p>
+          <div class="go">Browse quizzes →</div>
+        </div>
+      </div>
+    </div>
+    <div class="section" style="border-top:1px solid var(--line);">
+      <div class="section-head"><div><h2>Most played</h2><div class="sub">The quizzes people keep coming back to.</div></div>
+        <a class="btn btn-ghost btn-sm" data-action="go" data-route="listing">View all →</a>
+      </div>
+      <div class="quiz-grid">${featured.map(quizCardTpl).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function quizCardTpl(q){
+  return `<div class="quiz-card" data-action="go" data-route="detail" data-id="${q.id}">
+    <span class="cat-pill">${esc(q.category)}</span>
+    <h3>${esc(q.title)}</h3>
+    <div class="desc">${esc(q.desc)}</div>
+    <div class="quiz-meta"><span><b>${q.questions.length}</b> questions</span><span>${q.timesTaken.toLocaleString()} taken</span></div>
+  </div>`;
+}
+
+/* ---------- LISTING ---------- */
+function listingTpl(){
+  let list = quizzes.slice();
+  const kw = state.search.toLowerCase().trim();
+  if(kw) list = list.filter(q=>q.title.toLowerCase().includes(kw)||q.desc.toLowerCase().includes(kw)||q.category.toLowerCase().includes(kw));
+  if(state.activeCategory) list = list.filter(q=>q.category===state.activeCategory);
+  return `<div class="wrap page-pad">
+    <div class="section-head"><div><h2>Browse quizzes</h2><div class="sub">Pick a category or search for something specific.</div></div></div>
+    <div class="search-row"><input id="listing-search" type="text" placeholder="Search quizzes..." value="${esc(state.search)}"><button class="btn btn-ink" data-action="run-search">Search</button></div>
+    <div class="filter-bar">
+      <a class="chip ${!state.activeCategory?'active':''}" data-action="set-cat" data-cat="">All</a>
+      ${CATEGORIES.map(c=>`<a class="chip ${state.activeCategory===c?'active':''}" data-action="set-cat" data-cat="${esc(c)}">${esc(c)}</a>`).join('')}
+    </div>
+    ${list.length? `<div class="quiz-grid">${list.map(quizCardTpl).join('')}</div>`
+     : `<div class="empty-state"><h3>No quizzes match</h3><p>Try a different search or category — or create the quiz yourself.</p><button class="btn btn-primary" style="margin-top:14px;" data-action="go-create">Create a quiz</button></div>`}
+  </div>`;
+}
+
+/* ---------- QUIZ DETAIL (start screen) ---------- */
+function detailTpl(){
+  const q = getQuiz(state.params.id);
+  if(!q) return `<div class="wrap page-pad"><div class="empty-state"><h3>Quiz not found</h3><a class="btn btn-primary" data-action="go" data-route="listing">Browse quizzes</a></div></div>`;
+  return `<div class="wrap page-pad">
+    <div class="center-col">
+      <a class="exit-link" data-action="go" data-route="listing">← Back to all quizzes</a>
+      <span class="cat-pill">${esc(q.category)}</span>
+      <h1 style="font-size:32px;margin-top:14px;">${esc(q.title)}</h1>
+      <p style="color:var(--text-muted);margin-top:10px;">${esc(q.desc)}</p>
+      <div class="stat-cards">
+        <div class="stat-card"><b>${q.questions.length}</b><span>QUESTIONS</span></div>
+        <div class="stat-card"><b>${q.timesTaken.toLocaleString()}</b><span>TIMES TAKEN</span></div>
+        <div class="stat-card"><b>~${Math.max(1,Math.round(q.questions.length*0.5))}m</b><span>EST. TIME</span></div>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Created by ${esc(q.author)}</p>
+      <button class="btn btn-primary btn-block" data-action="start-quiz" data-id="${q.id}">Start quiz</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- TAKE QUIZ ---------- */
+function takeTpl(){
+  const sess = state.takeSession;
+  if(!sess) return `<div class="wrap page-pad"><div class="empty-state"><h3>No quiz in progress</h3><a class="btn btn-primary" data-action="go" data-route="listing">Browse quizzes</a></div></div>`;
+  const q = getQuiz(sess.quizId);
+  const question = q.questions[sess.index];
+  const letters=['A','B','C','D'];
+  return `<div class="wrap page-pad"><div class="take-wrap">
+    <a class="exit-link" data-action="exit-quiz">← Exit quiz</a>
+    <div class="progress-trail">${q.questions.map((_,i)=>`<div class="dot ${i<sess.index?'done':i===sess.index?'current':''}"></div>`).join('')}</div>
+    <div class="qcounter">Question ${sess.index+1} of ${q.questions.length}</div>
+    <div class="qcard">
+      <h2>${esc(question.text)}</h2>
+      ${question.options.map((opt,i)=>`<button class="option-btn ${sess.answers[sess.index]===i?'selected':''}" data-action="select-option" data-i="${i}">
+        <span class="option-letter">${letters[i]}</span>${esc(opt)}
+      </button>`).join('')}
+      <div class="take-nav">
+        <button class="btn btn-ghost" data-action="prev-question" ${sess.index===0?'disabled style="opacity:0.4;"':''}>← Back</button>
+        <button class="btn btn-primary" data-action="next-question" ${sess.answers[sess.index]===undefined?'disabled style="opacity:0.4;"':''}>${sess.index===q.questions.length-1?'Finish quiz':'Next →'}</button>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- RESULTS ---------- */
+function resultsTpl(){
+  const sess = state.takeSession;
+  if(!sess || !sess.finished) return `<div class="wrap page-pad"><div class="empty-state"><h3>No results yet</h3><a class="btn btn-primary" data-action="go" data-route="listing">Browse quizzes</a></div></div>`;
+  const q = getQuiz(sess.quizId);
+  const total = q.questions.length;
+  const correctCount = q.questions.filter((qu,i)=>sess.answers[i]===qu.correct).length;
+  const pct = Math.round((correctCount/total)*100);
+  const circumference = 2*Math.PI*78;
+  const offset = circumference - (pct/100)*circumference;
+  let tagText, tagColor;
+  if(pct>=80){tagText='Excellent!';tagColor='var(--mint);background:var(--mint-dim);'}
+  else if(pct>=50){tagText='Good effort';tagColor='var(--amber);background:#FBF0DC;'}
+  else {tagText='Keep practicing';tagColor='var(--coral);background:var(--coral-dim);'}
+  const letters=['A','B','C','D'];
+  return `<div class="wrap page-pad"><div class="results-wrap">
+    <div class="score-ring">
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <circle cx="90" cy="90" r="78" fill="none" stroke="var(--paper-dim)" stroke-width="14"/>
+        <circle cx="90" cy="90" r="78" fill="none" stroke="var(--violet)" stroke-width="14" stroke-linecap="round"
+          stroke-dasharray="${circumference}" stroke-dashoffset="${circumference}">
+          <animate attributeName="stroke-dashoffset" from="${circumference}" to="${offset}" dur="1s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/>
+        </circle>
+      </svg>
+      <div class="center"><b>${pct}%</b><span>${correctCount} / ${total} correct</span></div>
+    </div>
+    <span class="result-tag" style="color:${tagColor}">${tagText}</span>
+    <h1 style="font-size:24px;margin-top:20px;">${esc(q.title)}</h1>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+      <button class="btn btn-primary" data-action="start-quiz" data-id="${q.id}">Retake quiz</button>
+      <button class="btn btn-ghost" data-action="go" data-route="listing">Browse more quizzes</button>
+    </div>
+    <div class="review-list">
+      ${q.questions.map((qu,i)=>{
+        const chosen = sess.answers[i]; const isCorrect = chosen===qu.correct;
+        return `<div class="review-item">
+          <div class="rq">${i+1}. ${esc(qu.text)}</div>
+          <div class="review-answer ${isCorrect?'correct':'incorrect'}"><span class="lab">Your answer</span> ${letters[chosen]}. ${esc(qu.options[chosen])} ${isCorrect?'✓':'✕'}</div>
+          ${!isCorrect?`<div class="review-answer correct"><span class="lab">Correct</span> ${letters[qu.correct]}. ${esc(qu.options[qu.correct])} ✓</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+  </div></div>`;
+}
+
+/* ---------- BUILDER ---------- */
+function builderTpl(){
+  const b = state.builder;
+  return `<div class="wrap page-pad">
+    <div class="section-head"><div><h2>Create a quiz</h2><div class="sub">Write your questions, add four options each, and mark the correct one.</div></div></div>
+    <div class="form-row">
+      <div class="form-group"><label>Quiz title</label><input class="form-control" id="b-title" value="${esc(b.title)}" placeholder="e.g. World Capitals Sprint"></div>
+      <div class="form-group"><label>Category</label><select class="form-control" id="b-category">
+        <option value="">Select category</option>
+        ${CATEGORIES.map(c=>`<option ${b.category===c?'selected':''}>${esc(c)}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea class="form-control" id="b-desc" placeholder="One sentence about what this quiz covers.">${esc(b.desc)}</textarea></div>
+
+    <div id="questions-list">
+      ${b.questions.map((q,qi)=>questionBuilderTpl(q,qi,b.questions.length)).join('')}
+    </div>
+    <button class="add-q-btn" data-action="add-question">+ Add another question</button>
+
+    <div class="qb-toolbar">
+      <span style="font-size:13px;color:var(--text-muted);">${b.questions.length} question${b.questions.length!==1?'s':''} · ready when you are</span>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" data-action="cancel-build">Cancel</button>
+        <button class="btn btn-primary" data-action="publish-quiz">Publish quiz</button>
+      </div>
+    </div>
+  </div>`;
+}
+function questionBuilderTpl(q, qi, total){
+  const letters=['A','B','C','D'];
+  return `<div class="qb-card" data-qi="${qi}">
+    <div class="qb-head"><span class="qb-num">Question ${qi+1}</span>${total>1?`<button class="qb-remove" data-action="remove-question" data-qi="${qi}">Remove</button>`:''}</div>
+    <div class="form-group"><input class="form-control q-text" data-qi="${qi}" placeholder="Type your question here" value="${esc(q.text)}"></div>
+    ${q.options.map((opt,oi)=>`<div class="opt-row">
+      <input type="radio" name="correct-${qi}" data-qi="${qi}" data-oi="${oi}" class="q-correct" ${q.correct===oi?'checked':''} title="Mark as correct answer">
+      <span class="opt-label">${letters[oi]}</span>
+      <input type="text" class="form-control q-option" data-qi="${qi}" data-oi="${oi}" placeholder="Option ${letters[oi]}" value="${esc(opt)}">
+    </div>`).join('')}
+    <div class="hint">Select the radio button next to the correct answer.</div>
+  </div>`;
+}
+
+/* ---------- AUTH MODAL ---------- */
+function authModalTpl(){
+  if(!state.authModal) return '';
+  const mode = state.authModal;
+  return `<div class="modal-overlay" data-action="close-modal-overlay">
+    <div class="modal" data-stop>
+      <div class="modal-head"><h3>${mode==='login'?'Welcome back':'Create your account'}</h3><button class="modal-close" data-action="close-modal">✕</button></div>
+      <form id="auth-form">
+        ${mode==='signup'?`<div class="form-group"><label>Full name</label><input required class="form-control" name="name" placeholder="Jordan Blake"></div>`:''}
+        <div class="form-group"><label>Email</label><input required type="email" class="form-control" name="email" placeholder="you@example.com"></div>
+        <div class="form-group"><label>Password</label><input required type="password" class="form-control" name="password" placeholder="••••••••" minlength="4"></div>
+        <button class="btn btn-primary btn-block" type="submit">${mode==='login'?'Log in':'Create account'}</button>
+      </form>
+      <div class="security-note">🔒 <span>This is a prototype — no real accounts are created and any email/password combination will work.</span></div>
+      <p style="text-align:center;font-size:13px;margin-top:16px;color:var(--text-muted);">
+        ${mode==='login'?`New to Recall? <a data-action="open-auth" data-mode="signup" style="color:var(--ink);font-weight:700;">Sign up</a>`
+        :`Already have an account? <a data-action="open-auth" data-mode="login" style="color:var(--ink);font-weight:700;">Log in</a>`}
+      </p>
+    </div>
+  </div>`;
+}
+
+/* ---------- DASHBOARD ---------- */
+function dashboardTpl(){
+  const u = state.user;
+  const created = quizzes.filter(q=>q.createdByMe);
+  const tab = state.dashTab;
+  return `<div class="wrap page-pad">
+    <div class="section-head"><div><h2>My dashboard</h2><div class="sub">${esc(u.name)}</div></div>
+      <button class="btn btn-primary" data-action="go-create">+ Create a quiz</button>
+    </div>
+    <div class="stat-cards">
+      <div class="stat-card"><b>${created.length}</b><span>QUIZZES CREATED</span></div>
+      <div class="stat-card"><b>${(u.results||[]).length}</b><span>QUIZZES TAKEN</span></div>
+      <div class="stat-card"><b>${(u.results||[]).length?Math.round((u.results.reduce((s,r)=>s+r.pct,0))/(u.results.length))+'%':'—'}</b><span>AVG SCORE</span></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn ${tab==='created'?'active':''}" data-action="set-dash-tab" data-tab="created">Created by me</button>
+      <button class="tab-btn ${tab==='results'?'active':''}" data-action="set-dash-tab" data-tab="results">My results</button>
+    </div>
+    ${tab==='created'? (created.length? `<div class="table-wrap"><table class="dtable"><thead><tr><th>Quiz</th><th>Category</th><th>Questions</th><th>Taken</th><th></th></tr></thead><tbody>
+      ${created.map(q=>`<tr><td>${esc(q.title)}</td><td>${esc(q.category)}</td><td>${q.questions.length}</td><td>${q.timesTaken.toLocaleString()}</td>
+      <td class="actions"><button class="btn btn-ghost btn-sm" data-action="go" data-route="detail" data-id="${q.id}">View</button>
+      <button class="btn btn-danger btn-sm" data-action="delete-quiz" data-id="${q.id}">Delete</button></td></tr>`).join('')}
+      </tbody></table></div>`
+      : `<div class="empty-state"><h3>You haven't created a quiz yet</h3><p>Turn your knowledge into a quiz others can take.</p><button class="btn btn-primary" style="margin-top:14px;" data-action="go-create">Create a quiz</button></div>`) : ''}
+    ${tab==='results'? ((u.results||[]).length? `<div class="table-wrap"><table class="dtable"><thead><tr><th>Quiz</th><th>Score</th><th>Taken</th><th></th></tr></thead><tbody>
+      ${u.results.map(r=>{const q=getQuiz(r.quizId); if(!q) return ''; return `<tr><td>${esc(q.title)}</td><td>${r.correct}/${r.total} (${r.pct}%)</td><td>${esc(r.date)}</td>
+      <td><button class="btn btn-ghost btn-sm" data-action="start-quiz" data-id="${q.id}">Retake</button></td></tr>`;}).join('')}
+      </tbody></table></div>`
+      : `<div class="empty-state"><h3>No quizzes taken yet</h3><p>Browse the board and take one — your results will show up here.</p><button class="btn btn-primary" style="margin-top:14px;" data-action="go" data-route="listing">Browse quizzes</button></div>`) : ''}
+  </div>`;
+}
+
+/* ================= MASTER RENDER ================= */
+function render(){
+  let body='';
+  if(state.route==='home') body=homeTpl();
+  else if(state.route==='listing') body=listingTpl();
+  else if(state.route==='detail') body=detailTpl();
+  else if(state.route==='take') body=takeTpl();
+  else if(state.route==='results') body=resultsTpl();
+  else if(state.route==='build') body=builderTpl();
+  else if(state.route==='dashboard') body=dashboardTpl();
+  document.getElementById('app').innerHTML = navTpl()+'<main>'+body+'</main>'+footerTpl()+authModalTpl();
+  attachDynamicHandlers();
+}
+
+/* ================= EVENTS ================= */
+document.addEventListener('click', function(e){
+  const t = e.target.closest('[data-action]');
+  if(!t) return;
+  const action = t.dataset.action;
+
+  if(action==='none'){ e.preventDefault(); return; }
+  if(action==='go'){ go(t.dataset.route, {id:t.dataset.id}); return; }
+  if(action==='go-create'){
+    if(!state.user){ state.authRole='creator'; state.authModal='signup'; state.authIntent='build'; render(); return; }
+    state.builder = newBuilder(); go('build'); return;
+  }
+  if(action==='toggle-mobile-menu'){ state.mobileMenuOpen=!state.mobileMenuOpen; render(); return; }
+  if(action==='open-auth'){ state.authModal=t.dataset.mode; state.authIntent=null; render(); return; }
+  if(action==='close-modal' || action==='close-modal-overlay'){ if(action==='close-modal-overlay' && e.target!==t) return; state.authModal=null; render(); return; }
+  if(action==='logout'){ state.user=null; go('home'); showToast('You have been logged out.'); return; }
+
+  if(action==='run-search'){ state.search=document.getElementById('listing-search').value; render(); return; }
+  if(action==='set-cat'){ state.activeCategory=t.dataset.cat; render(); return; }
+
+  if(action==='start-quiz'){
+    const q = getQuiz(t.dataset.id);
+    state.takeSession = {quizId:q.id, index:0, answers:{}, finished:false};
+    go('take'); return;
+  }
+  if(action==='exit-quiz'){ state.takeSession=null; go('listing'); return; }
+  if(action==='select-option'){
+    state.takeSession.answers[state.takeSession.index] = Number(t.dataset.i); render(); return;
+  }
+  if(action==='prev-question'){
+    if(state.takeSession.index>0){ state.takeSession.index--; render(); } return;
+  }
+  if(action==='next-question'){
+    const sess = state.takeSession; const q = getQuiz(sess.quizId);
+    if(sess.answers[sess.index]===undefined) return;
+    if(sess.index < q.questions.length-1){ sess.index++; render(); }
+    else{
+      sess.finished = true;
+      const total=q.questions.length;
+      const correct = q.questions.filter((qu,i)=>sess.answers[i]===qu.correct).length;
+      const pct = Math.round((correct/total)*100);
+      q.timesTaken++;
+      if(state.user){
+        state.user.results = state.user.results||[];
+        state.user.results.unshift({quizId:q.id, correct, total, pct, date:'Just now'});
+        addNotification('You scored <b>'+pct+'%</b> on <b>'+esc(q.title)+'</b>');
+      }
+      go('results');
+    }
+    return;
+  }
+
+  if(action==='add-question'){ state.builder.questions.push(newBlankQuestion()); render(); return; }
+  if(action==='remove-question'){ state.builder.questions.splice(Number(t.dataset.qi),1); render(); return; }
+  if(action==='cancel-build'){ if(confirm('Discard this quiz?')){ state.builder=null; go('home'); } return; }
+  if(action==='publish-quiz'){
+    syncBuilderFromDOM();
+    const b = state.builder;
+    if(!b.title.trim()){ showToast('Give your quiz a title first.'); return; }
+    if(!b.category){ showToast('Pick a category for your quiz.'); return; }
+    for(let i=0;i<b.questions.length;i++){
+      const q=b.questions[i];
+      if(!q.text.trim() || q.options.some(o=>!o.trim())){ showToast('Question '+(i+1)+' needs text and all four options filled in.'); return; }
+    }
+    const newQuiz = {id:'quiz-'+(quizIdCounter++), title:b.title.trim(), desc:b.desc.trim()||'A quiz on '+b.category+'.', category:b.category,
+      author:state.user.name, timesTaken:0, createdByMe:true,
+      questions: b.questions.map(q=>({text:q.text.trim(), options:q.options.map(o=>o.trim()), correct:q.correct}))};
+    quizzes.unshift(newQuiz);
+    state.builder=null;
+    showToast('Quiz published!', newQuiz.title+' is now live on the board.');
+    addNotification('Your quiz <b>'+esc(newQuiz.title)+'</b> is live.');
+    go('detail',{id:newQuiz.id});
+    return;
+  }
+
+  if(action==='set-dash-tab'){ state.dashTab=t.dataset.tab; render(); return; }
+  if(action==='delete-quiz'){
+    const idx = quizzes.findIndex(q=>q.id===t.dataset.id);
+    if(idx>-1 && confirm('Delete this quiz? This cannot be undone.')){ quizzes.splice(idx,1); render(); showToast('Quiz deleted.'); }
+    return;
+  }
+});
+
+function syncBuilderFromDOM(){
+  const b = state.builder;
+  const titleEl = document.getElementById('b-title'); if(titleEl) b.title = titleEl.value;
+  const descEl = document.getElementById('b-desc'); if(descEl) b.desc = descEl.value;
+  const catEl = document.getElementById('b-category'); if(catEl) b.category = catEl.value;
+  document.querySelectorAll('.q-text').forEach(el=>{ b.questions[Number(el.dataset.qi)].text = el.value; });
+  document.querySelectorAll('.q-option').forEach(el=>{ b.questions[Number(el.dataset.qi)].options[Number(el.dataset.oi)] = el.value; });
+  document.querySelectorAll('.q-correct:checked').forEach(el=>{ b.questions[Number(el.dataset.qi)].correct = Number(el.dataset.oi); });
+}
+
+document.addEventListener('change', function(e){
+  const el = e.target;
+  if(el.classList.contains('q-correct')){
+    state.builder.questions[Number(el.dataset.qi)].correct = Number(el.dataset.oi);
+  }
+});
+
+function attachDynamicHandlers(){
+  const authForm = document.getElementById('auth-form');
+  if(authForm){
+    authForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const fd = new FormData(authForm);
+      const email = fd.get('email');
+      const mode = state.authModal;
+      state.user = { name: fd.get('name') || email.split('@')[0], email, results:[] };
+      state.authModal = null;
+      showToast('Welcome, '+state.user.name.split(' ')[0]+'!', mode==='signup'?'Confirmation email sent to '+email:null);
+      if(state.authIntent==='build'){ state.authIntent=null; state.builder=newBuilder(); go('build'); }
+      else { go('dashboard'); }
+    });
+  }
+  // keep builder text inputs in sync as user types (so add/remove question doesn't lose data)
+  document.querySelectorAll('.q-text, .q-option').forEach(el=>{
+    el.addEventListener('input', function(){
+      const qi=Number(this.dataset.qi);
+      if(this.classList.contains('q-text')) state.builder.questions[qi].text=this.value;
+      else state.builder.questions[qi].options[Number(this.dataset.oi)] = this.value;
+    });
+  });
+  const bTitle=document.getElementById('b-title'); if(bTitle) bTitle.addEventListener('input',function(){state.builder.title=this.value;});
+  const bDesc=document.getElementById('b-desc'); if(bDesc) bDesc.addEventListener('input',function(){state.builder.desc=this.value;});
+  const bCat=document.getElementById('b-category'); if(bCat) bCat.addEventListener('change',function(){state.builder.category=this.value;});
+  const listingSearch=document.getElementById('listing-search');
+  if(listingSearch) listingSearch.addEventListener('keydown',function(ev){ if(ev.key==='Enter'){ state.search=this.value; render(); }});
+}
+
+/* ================= INIT ================= */
+render();
+})();
+</script>
+</body>
+</html>
